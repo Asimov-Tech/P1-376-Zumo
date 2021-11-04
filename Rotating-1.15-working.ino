@@ -101,7 +101,7 @@ void loop()
 
 
 
-//This function makes the robot inbetween 88 and 93 degrees
+//This function makes the robot inbetween 90 and 91 degrees
 void turn90()
 {
   if(turnAngleDegrees>=90&&91>=turnAngleDegrees)
@@ -128,15 +128,6 @@ void run10()
     rotatCheck=false;
   }
 }
-
-
-
-
-
-
-
-
-
 
 
 
