@@ -256,12 +256,12 @@ void checkForObs()
   
   if(center_right_sensor==6)
   {
-    motors.setSpeeds(-120,100);
+    motors.setSpeeds(100,-120);
   }
 
   if(right_sensor==6)
   {
-    motors.setSpeeds(-120,100);
+    motors.setSpeeds(-100,120);
   }
 }
 
