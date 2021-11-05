@@ -1,0 +1,6 @@
+Skal bruge 3 funktioner for at virke
+getAngle() - Skal udregne og return en vinkel mellem et globalt system / startposition
+driveDistance() - skal køre en bestemt afstand svarende til hvad funktionen får i input
+turn.Angle() - Skal rotere en bestemt mængde grader svarende til hvad funktionen får i input
+
+Koden kan ikke endnu tracke hvor den er i koordinatsystemet
