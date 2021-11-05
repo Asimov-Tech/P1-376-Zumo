@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "C:/Users/Bruger/GitHub-Repository/P1-376-Zumo/.pio/libdeps/a-star32U4/Zumo32U4",
-                "C:/Users/Bruger/.platformio/packages/framework-arduino-avr/cores/arduino"
+                "C:/Users/Bruger/.platformio/packages/framework-arduino-avr/cores/arduino",
+                "C:/Users/Bruger/Documents/PlatformIO/Projects/Place holder/.pio/libdeps/a-star32U4/Zumo32U4"
             ],
             "defines": [
                 "_DEBUG",
