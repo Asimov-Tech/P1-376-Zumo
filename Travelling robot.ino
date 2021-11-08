@@ -3,7 +3,7 @@
 
 
 
-const int numDest =7;
+const int numDest =7;//7 points takes approx. 5 minutes
 
 struct Destination{
     char id;
