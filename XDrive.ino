@@ -8,7 +8,7 @@ Zumo32U4Encoders encoders;
 Zumo32U4Motors motors;
 
 
-double xdist = 30;
+double xdist = 10;
 double ydist = 10;
 double count = 0;
 bool XYdicration = true; //true for x og false for y
@@ -28,42 +28,35 @@ void setup() {
 }
 
 void loop() {
-  distCal();
+  distCal(xdist);
+  delay(1000);
+  distCal(xdist);
 
 }
 
 
-void distCal() {
+void distCal(double dist) {
+  resetEncoders();
+  int f = 1;
+  if (dist < 0) f = -1;
   if (XYdicration == true) {
-    
-    count = (((xdist*0.785) * 900) / (PI * 3, 9)); // 0,785 er en værdi der ganges med fordi det virker
+
+    count = dist*78.5; //Don't ask, it just works
 
     
-    Serial.println((String)count);
-    Serial.println("Encoder1 count = " + (String)EncoderCount);
-    if (EncoderCount < count) {
-      
-      getEncoder();    
-
-      motors.setSpeeds(105, 100);
+    //Serial.println((String)count);
+    //Serial.println("Encoder1 count = " + (String)EncoderCount);
+    while(f*encoders.getCountsRight()< f*count) {   
+      motors.setSpeeds(f*111,f*100);
     }
-    else {
       Serial.println("Kør");
       motors.setSpeeds(0, 0);
+      
     }
 
-  }
-
 
 }
 
-void getEncoder() {
-  int countsR= countsR += encoders.getCountsRight();
-  int countsL= countsL += encoders.getCountsLeft();
-  EncoderCount = ((countsR + countsL) / 2) ;  
-  return EncoderCount;
-  resetEncoders();
-}
 void resetEncoders() {
   encoders.getCountsAndResetLeft();
   encoders.getCountsAndResetRight();
