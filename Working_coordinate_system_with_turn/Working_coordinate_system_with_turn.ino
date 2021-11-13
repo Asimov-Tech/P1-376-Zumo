@@ -13,6 +13,9 @@ double ydist = 10;
 double count = 0;
 double EncoderCount = 0;
 
+int xcoordiantes[]  = {2, 4,  4,  4,  3};
+int ycoordiantes[]  = {2, 4,  4,  4,  3};
+
 
 
 
@@ -64,8 +67,12 @@ void setup()
   
 }
 
+
+int i=0;
 void loop() 
 {
+  xdist=xcoordiantes[i];
+  ydist=ycoordiantes[i];
   imustart();
   
   checkxdriven();
