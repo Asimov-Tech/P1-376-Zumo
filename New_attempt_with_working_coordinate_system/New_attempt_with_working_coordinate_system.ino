@@ -66,16 +66,13 @@ void setup()
 
 void loop() 
 {
-
   imustart();
-  
   checkxdriven();
   checkturn90();
   resetEncoders();
   checkydriven();
   checkturnminus90();
   Serial.println("this is fucked");
-
 }
 
 
@@ -84,7 +81,7 @@ void checkxdriven()
 {
   while(xdriven==false)
   {
-    owndistcalx();   
+    distDriveX(xdist);   
   }
 }
 
@@ -96,7 +93,6 @@ void checkturn90()
     if(turnAngleDegrees >= 90 && 91 >= turnAngleDegrees)
     {
       motors.setSpeeds(0, 0);
-      resetEncoders();
       turned90=true;
       xdriven=false;
       imustart();
@@ -114,7 +110,7 @@ void checkydriven()
 {
   while(turned90==true)
   {
-    owndistcaly();
+    distDriveY(ydist);
     ydriven=true;
     turned90=false;
     imustart();
@@ -132,7 +128,6 @@ void checkturnminus90()
       motors.setSpeeds(0, 0);
       ydriven=false;
       xdriven=false;  
-      imustart();
     }
     else
     {
@@ -143,43 +138,6 @@ void checkturnminus90()
 }
 
 
-
-
-void owndistcalx()
-{
-  int countdist = (((xdist * 0.788) * 900) / (PI * 3, 9));
-  if(EncoderCount < countdist)
-  {
-    getEncoder();  
-    motors.setSpeeds(100,100);
-    imustart();
-  }
-  else
-  {
-    motors.setSpeeds(0,0);
-    xdriven=true;
-    imustart();
-  }
-}
-
-
-
-void owndistcaly()
-{
-  int countdist = (((ydist * 0.788) * 900) / (PI * 3, 9));
-  if(EncoderCount < countdist)
-  {
-    getEncoder();
-    motors.setSpeeds(100,100);
-    imustart();
-  }
-  else
-  {
-    motors.setSpeeds(0,0);
-    ydriven=true;    
-    imustart();
-  }
-}
 
 
 
