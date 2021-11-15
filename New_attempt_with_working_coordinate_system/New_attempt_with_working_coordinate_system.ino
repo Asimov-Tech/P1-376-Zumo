@@ -69,10 +69,7 @@ void loop()
   checkxdriven();
   checkturn90();
   checkydriven();
-  checkturnminus90();
-  location();
-  delay(10000);
-  
+  checkturnminus90();  
 }
 
 

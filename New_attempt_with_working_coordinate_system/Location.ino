@@ -20,7 +20,7 @@ void calCoordiPose() {
   double xNew = 0;
   double yNew = 0;
   double distTotal = 0; //Sort of a total distance traveled, but not really
-  double distBetweenWheels = 8.5;  //4 cm between each wheel
+  double distBetweenWheels = 11.5;  //4 cm between each wheel
   poseNew = (distRight - distLeft) / distBetweenWheels; //calculate the new position angle after the wheels have moved their distance, given in radians
   distTotal = (distRight + distLeft) / 2; //calculating total distance so that a nex x and y can be calculated
   xNew = distTotal * cos(poseVector[2] + (poseNew / 2)); //calculate the new x-coordinate after move
@@ -58,6 +58,5 @@ void location() { //function compiling all the other functions
   calCoordiPose(); //using those distances to calculate the coordinates
   convertRadians(); // converting the radians to degrees for the print
   Serial.println("New x-value: " + (String)poseVector[0] + " New y-value: " + (String)poseVector[1] + " New position: " + (String)deg + " degrees");
-  delay(50); //Reading distances in intervals of 50 milliseconds
 
 }
