@@ -70,19 +70,6 @@ void setup()
 
 void loop() 
 {
-  countsRight = encoders.getCountsRight();
-  countsLeft = encoders.getCountsLeft();
-  
-  //For the left side
-  int left_cm=(countsLeft/900)*3.14*4;
-
-  //For the right side
-  int right_cm=(countsLeft/900)*3.14*4;
-
-
-  //The amount the robot has travlled
-  travel_distance=(left_cm+right_cm)/2;  
-
 
   turnSensorUpdate();
   turnAngleDegrees=((((int32_t)turnAngle >> 16) * 360) >> 16);
@@ -95,8 +82,7 @@ void loop()
   turn90();
   if(rotatCheck==true)
   {
-    run10();
-    turnSensorReset();
+    
   }    
 }
 
@@ -117,18 +103,7 @@ void turn90()
 }
 
 
-void run10()
-{
-  if(travel_distance<travelMaxDistance)
-  {
-    motors.setSpeeds(100,100);
-  }
-  else
-  {
-    motors.setSpeeds(0,0);
-    rotatCheck=false;
-  }
-}
+
 
 
 
