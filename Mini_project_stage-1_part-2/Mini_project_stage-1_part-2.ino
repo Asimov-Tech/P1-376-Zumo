@@ -7,9 +7,9 @@ Zumo32U4IMU imu;
 Zumo32U4ButtonA buttonA;
 Zumo32U4Encoders encoders;
 Zumo32U4Motors motors;
+Zumo32U4LineSensors lineSensors;
 
 
-//This is a push commentary
 /* turnAngle is a 32-bit unsigned integer representing the amount
 the robot has turned since the last time turnSensorReset was
 called.  This is computed solely using the Z axis of the gyro, so
@@ -71,19 +71,11 @@ void setup()
 void loop() 
 {
 
-  turnSensorUpdate();
-  turnAngleDegrees=((((int32_t)turnAngle >> 16) * 360) >> 16);
-  lcd.gotoXY(0, 0);
-  lcd.print((((int32_t)turnAngle >> 16) * 360) >> 16);
-  lcd.print(F("   "));
-
-
-
-  turn90();
-  if(rotatCheck==true)
+  while(rotatCheck==false)
   {
-    
-  }    
+    turn90;
+  }
+  
 }
 
 
