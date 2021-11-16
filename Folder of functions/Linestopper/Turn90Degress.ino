@@ -1,17 +1,7 @@
 
-#include <Arduino.h>
-#include <Wire.h>
-#include <Zumo32U4.h>
 
-Zumo32U4LCD lcd;
-Zumo32U4IMU imu;
-Zumo32U4ButtonA buttonA;
-Zumo32U4Encoders encoders;
-Zumo32U4Motors motors;
-Zumo32U4LineSensors lineSensors;
-
-
-/*turnAngle is a 32-bit unsigned integer representing the amount
+//This is a push commentary
+/* turnAngle is a 32-bit unsigned integer representing the amount
 the robot has turned since the last time turnSensorReset was
 called.  This is computed solely using the Z axis of the gyro, so
 it could be inaccurate if the robot is rotated about the X or Y
@@ -39,9 +29,9 @@ uint16_t gyroLastUpdate = 0;
 
 
   //These are the variables for keeping track of how much the encoders have moved.
-  int16_t countsLeft = encoders.getCountsLeft();
+  /*int16_t countsLeft = encoders.getCountsLeft();
   int16_t countsRight = encoders.getCountsRight();
-
+*/
   //Max distance the robot should drive
   int travelMaxDistance=10;
 
@@ -50,14 +40,18 @@ uint16_t gyroLastUpdate = 0;
   int turnAngleDegrees;
 
 
-  bool rotatCheck=false;
+
+  //The amount the robot has moved in cm
+  int travel_distance;
 
 
-
-void setup() 
+  int16_t countsLeft = encoders.getCountsLeft();
+  int16_t countsRight = encoders.getCountsRight();
+/*void setup() 
 {
   Serial.println(9600);
   turnSensorSetup();
+  turnSensorReset();
   delay(500);
   turnSensorReset();
   lcd.clear();
@@ -66,24 +60,43 @@ void setup()
 
 void loop() 
 {
-turn90();
-  
+
+
+
+
+  turn90();
+  while(rotatCheck==true)
+  {
+    
+  }    
 }
-
-
+*/
+void imustart()
+{
+  turnSensorUpdate();
+  turnAngleDegrees=((((int32_t)turnAngle >> 16) * 360) >> 16);
+}
 
 
 //This function makes the robot inbetween 90 and 91 degrees
 void turn90()
 {
-  while(turnAngleDegrees>=90&&91>=turnAngleDegrees)
+  while(rotateCheck==false)
   {
-    motors.setSpeeds(0,0);
-    rotatCheck=true;
-  }
-  else
-  {
-    motors.setSpeeds(-120,100);     
+    if(turnAngleDegrees <=-90 && -91<=turnAngleDegrees)
+    {
+      motors.setSpeeds(0, 0);
+      rotateCheck=true;
+      left=false;
+      Center=false;
+      right=false;
+    }
+    else
+    {
+      motors.setSpeeds(100, -120);
+      imustart();
+
+    }
   }
 }
 
@@ -93,15 +106,14 @@ void turn90()
 
 
 //Ik rør ved noget herefter, dette er alt sammen Carlos kode der bliver brugt til gyro
-/*This should be called in setup() to enable and calibrate the
+/* This should be called in setup() to enable and calibrate the
 gyro.  It uses the LCD, yellow LED, and button A.  While the LCD
 is displaying "Gyro cal", you should be careful to hold the robot
-still.*/
-/*
+still.
+
 The digital zero-rate level of the gyro can be as high as
 25 degrees per second, and this calibration helps us correct for
-that. 
-*/
+that. */
 
 void turnSensorSetup()
 {
@@ -110,8 +122,7 @@ void turnSensorSetup()
   imu.enableDefault();
   imu.configureForTurnSensing();
 
-  lcd.clear();
-  lcd.print(F("Gyro cal"));
+
 
   // Turn on the yellow LED in case the LCD is not available.
   ledYellow(1);
@@ -132,6 +143,12 @@ void turnSensorSetup()
   }
   ledYellow(0);
   gyroOffset = total / 1024;
+
+  // Display the angle (in degrees from -180 to 180) until the
+  // user presses A.
+
+
+
 }
 
 

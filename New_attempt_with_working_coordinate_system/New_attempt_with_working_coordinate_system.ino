@@ -11,6 +11,9 @@ double xdist = 10;
 double ydist = 10;
 double count = 0;
 double EncoderCount = 0;
+int theField = 10;
+int halfTheField  = 5;
+
 
 
 /* turnAngle is a 32-bit unsigned integer representing the amount
@@ -72,7 +75,6 @@ void loop()
   checkydriven();
   checkturnminus90();
   */
-  pathFinding();
   
 }
 

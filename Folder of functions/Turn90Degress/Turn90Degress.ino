@@ -91,17 +91,22 @@ void loop()
 //This function makes the robot inbetween 90 and 91 degrees
 void turn90()
 {
-  if(turnAngleDegrees>=90&&91>=turnAngleDegrees)
+  while(ydriven==true)
   {
-    motors.setSpeeds(0,0);
-    rotatCheck=true;
-  }
-  else
-  {
-    motors.setSpeeds(-120,100);     
+    if(turnAngleDegrees <= -90 && -91 <= turnAngleDegrees)
+    {
+      motors.setSpeeds(0, 0);
+      ydriven=false;
+      xdriven=false;  
+    }
+    else
+    {
+      motors.setSpeeds(100, -120);
+      imustart();
+      delay(10000);
+    }
   }
 }
-
 
 
 

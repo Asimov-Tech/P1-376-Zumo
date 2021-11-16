@@ -5,6 +5,7 @@ Zumo32U4LineSensors lineSensors;
 Zumo32U4ButtonA buttonA;
 Zumo32U4Motors motors;
 Zumo32U4Encoders encoders;
+Zumo32U4IMU imu;
 
 //int searchLeft;
 //int searchRight;
@@ -19,14 +20,13 @@ struct LineSensorsWhite { //Datatype that stores the boolean values for the sens
     bool rightCenter;
     bool right;
 };
+    bool left =false;
+    bool Center=false;
+    bool right=false;
 
-bool left = false;
-bool Center =false;
-bool right  =false;
+
 
 int threshold; // White threshold, white return values lower than this
-int threshold2;
-int threshold3;
 LineSensorsWhite sensorState = {false,false,false,false,false};
 
 void setup() {
@@ -34,29 +34,43 @@ void setup() {
     readSensors(sensorState);      //fills structure with first bools
     Serial.begin(9600);
     //calibrWht();                   //Calibrates the sensors for white lines
+    turnSensorSetup();
+    delay(500);
+    turnSensorReset();
+    //motors.setSpeeds(50,50);  
 }
+
+bool rotateCheck=false;
 
 void loop() 
-{ 
-  printSensorReadings();
-  lineChecker();
+{
+
+  imustart();
+  turn90();
+  lineCheckAndStop();
+  
 }
 
-void  lineChecker()
+
+void lineCheckAndStop()
 {
-  if(left ==  false && Center ==  false &&  right ==  false)
-  {
-    motors.setSpeeds(100,100);
-  }
-  else
-  {
-    motors.setSpeeds(0,0);
-  }
+     readSensors(sensorState);    //fill sensordata
+     printSensor();
+     readSensors(sensorState);
+     
+    if(left==true && Center == true && right  ==  true) //If sensorState bool on the left sensor is true and if we haven't crossed the first line
+    {
+        motors.setSpeeds(0, 0);               //Begin to drive faster toward second line
+        delay(2000);
+    }
+    else
+    {
+      motors.setSpeeds(75 , 75);
+    }
 }
 
-void printSensorReadings()
+void printSensor()
 {
-      readSensors(sensorState);    //fill sensordata
     Serial.println("------------- SENSOR DATA -------------");
     Serial.println("Left sensor value:         " + (String)sensorValues[0] + ", state: " + (String)sensorState.left);
     //Serial.println("Left Center sensor value:  " + (String)sensorValues[1] + ", state: " + (String)sensorState.leftCenter);
@@ -64,26 +78,9 @@ void printSensorReadings()
     //Serial.println("Right Center sensor value: " + (String)sensorValues[3] + ", state: " + (String)sensorState.rightCenter);
     Serial.println("RIGHT sensor value:        " + (String)sensorValues[4] + ", state: " + (String)sensorState.right);
     Serial.println("------------- END OF DATA -------------"); //print sensordata
-   delay(200);
 }
 
 
-/*
-void calibrWht() { //A funtion that is called in the setup to help calibrate sensors for the conditions at hand
-    Serial.println("Press A to calibrate WHITE");
-    delay(250);
-    buttonA.waitForPress();
-    threshold3 = (sensorValues[2]+20);
-    threshold2 = ((sensorValues[1] + sensorValues[3]) / 2 + 20); //takes the mean value of the three center sensors and adds some margin
-    //threshold = ((sensorValues[0]+sensorValues[4])/2 + 20); //takes the mean value of the outer-most sensors and makes a separate threshold for them
-    delay(250);
-    Serial.println(threshold); //prints threshold once at the beginning of the code
-    Serial.println(threshold2);
-    buttonA.waitForPress();
-}
-*/
-
-//The values are harcoded
 void readSensors(LineSensorsWhite& state) {  // Next line reads the sensor values and store them in the array lineSensorValues
     lineSensors.read(sensorValues, useEmitters ? QTR_EMITTERS_ON : QTR_EMITTERS_OFF); //Retrieves data from sensors
     state = {false,false,false,false,false}; // state of the sensors is ALWAYS set to negative in the structure, so that the if statements below only change the boolean to true when the conditions are met
@@ -91,14 +88,14 @@ void readSensors(LineSensorsWhite& state) {  // Next line reads the sensor value
         state.left = true;
         left=true;
     }
-    /*if (sensorValues[1] < threshold2) {
+    /*if (sensorValues[1] < threshold) {
         state.leftCenter = true;
     }*/
     if (sensorValues[2] < 150) {
         state.Center = true;
         Center=true;
     }
-    /*if (sensorValues[3] < threshold2) {
+    /*if (sensorValues[3] < threshold) {
         state.rightCenter = true;
     }*/
     if (sensorValues[4] < 300) {
