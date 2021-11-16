@@ -59,8 +59,6 @@ void distCal(double dist)
       motors.setSpeeds(0, 0);
       
     }
-
-
 }
 
 void resetEncoders() {
