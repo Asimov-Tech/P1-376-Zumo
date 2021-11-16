@@ -65,11 +65,15 @@ void setup()
 */
 void loop() 
 {
+  /*
   imustart();
   checkxdriven();
   checkturn90();
   checkydriven();
-  checkturnminus90();  
+  checkturnminus90();
+  */
+  pathFinding();
+  
 }
 
 
@@ -133,6 +137,7 @@ void checkturnminus90()
     {
       motors.setSpeeds(100, -120);
       imustart();
+      delay(10000);
     }
   }
 }
