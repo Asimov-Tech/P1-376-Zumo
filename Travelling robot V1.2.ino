@@ -49,6 +49,7 @@ void getCommands(int i, int r){
         //The following 3 switch statements figures out how the robot needs to align itself compared to the global coordinate system. 
         //0 is along initial allignment (the way the robot was initially pointed). -90 is 90 degrees clockwise compared to initial allignment. 
         //90 is 90 degrees counterclockwise compared to initial allignment and -180 is opposite the initial allignment.
+        //After each switch statement a driving functions executes
         switch(true){
             case (yDist1 > 0): turnTo(-90); break;
             case (yDist1 < 0): turnTo(90); break; 
