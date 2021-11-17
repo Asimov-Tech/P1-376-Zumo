@@ -16,6 +16,61 @@ struct Route{
     double dist;
 };
 
+void getCommands(int i, int r){
+    //If there are no additional destinations
+    if(i == r){
+        //Prints message that job is completed
+        lcd.gotoXY(0,0);
+        lcd.print("  Task  ");
+        lcd.gotoXY(0,1);
+        lcd.print("Complete"):
+
+    } else {
+        //Defines local variables. xDist is distance that must be travelled along x-axis
+        //yDist 1 is distance that must be traveled first along y-axis (in case multiple commands are needed)
+        double xDist, yDist1, yDist2;
+        xDist = spots[i].x - spots[i+1].x;
+
+        if(xDist != 0){//If the x-distance is not 0 mutliple yDist are needed
+            //This if statement figures out whether the best route is along the upper or lower bound and calculates distances accordingly
+            if(upperbound < spots[i].y+spots[i+1].y){
+                yDist1 =  upperBound - spots[i].y;
+                yDist2 = -upperbound + spots[i+1].y;
+            } else {
+                yDist1 = -spots[i].y;
+                yDist2 =  spots[i+1].y;
+            }
+        } else {
+            //If there xDist is 0 it is only needed to travel along the y-axis once, so only one distance is defined (as non-0)
+            yDist1 = spots[i+1].y-spots[i].y;
+            yDist2 = 0;
+        }
+
+        //The following 3 switch statements figures out how the robot needs to align itself compared to the global coordinate system. 
+        //0 is along initial allignment (the way the robot was initially pointed). -90 is 90 degrees clockwise compared to initial allignment. 
+        //90 is 90 degrees counterclockwise compared to initial allignment and -180 is opposite the initial allignment.
+        switch(true){
+            case (yDist1 > 0): turnTo(-90); break;
+            case (yDist1 < 0): turnTo(90); break; 
+        }
+        driveDist(xDist);
+
+        switch(true){
+            case (xDist > 0): turnTo(0); break;
+            case (xDist < 0): turnTo(-180); break; 
+        }
+        driveDist(xDist);
+
+        switch(true){
+            case (yDist2 > 0): turnTo(-90); break;
+            case (yDist2 < 0): turnTo(90); break; 
+        }
+        driveDist(yDist2);
+        //Reiterates through the command
+        getCommands(i+1,r)
+    }
+}
+
 //High number so that all routes are shorter
 Route shortestRoute = {{},1000000000};
 
@@ -143,16 +198,37 @@ void permuteDestinations(int l, int r)
     }
 
 }
+
+
+void printDest(){
+    Serial.print("Shortest route is: ");
+    for (int i = 0; i < numDest; i++) Serial.print(shortestRoute.stops[i]);
+    Serial.println(" with distance : " + (String)shortestRoute.dist);
+}
+
 void setup(){
-  Serial.begin(9600);
-  delay(500);
+    Serial.begin(9600);
+    lcd.print("Booting");
+    routeInit('i');
+    delay(500);
+    lcd.clear();
+    lcd.print(" Calcu");
+    lcd.gotoXY(0,1);
+    lcd.print(" lating");
+    permuteDestinations(1,numDest-1);
+    lcd.clear();
+    printDest();
 
 }
 void loop(){
-  routeInit('i');
-  delay(500);
-  permuteDestinations(1,numDest-1);
-  while (1>0);
+    lcd.print("Press A");
+    lcd.gotoXY(0,1);
+    lcd.print("to start");
+    buttonA.waitForPress();
+    getCommands(0,numDest);
+
+
+
 
 }
 
