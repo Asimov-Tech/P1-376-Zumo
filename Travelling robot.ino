@@ -1,5 +1,5 @@
 #include <Wire.h>
-#include <Zumo32U4.h>
+//#include <Zumo32U4.h>
 
 
 
@@ -22,14 +22,15 @@ Route shortestRoute = {{},1000000000};
 
 //Destinations with coordinates
 Destination spots[numDest] ={
-    {'A', 0, 0},
-    {'B', 4, 1},
-    {'C', 2, 3},
-    {'D',-1, 5},
-    {'E',-2, 2},
-    {'F',-2,-3},
-    {'G', 3,-2}
+    {'O', 0, 0},
+    {'A', 1, 1},
+    {'B', 2, 2},
+    {'C', 2, 4},
+    {'D', 3, 3},
+    {'E', 5, 1},
+    {'O', 0, 0}
 };
+
 
 char destinationsID[numDest];
 //Sets up an array of numbers. Is used in the permutation
@@ -37,18 +38,35 @@ void setupDestinations(){
     for(int i=0; i < numDest; i++)
         destinationsID[i]=i; 
 }
-
-
+//upper bound of field (used for augmented cost matrix)
+int upperBound = 10;
 double costMatrix[numDest][numDest];
 //Sets up a cost matrix with direct routes between points
-void setupCostMatrix()
+void setupCostMatrix(char mod)//uses d for direct and i for indirect
 {   //Chooses row first
     for(int i=0; i < numDest; i++)
     {   //chooses column second
         for(int j=0; j < numDest; j++)
         {   //calculates the distance as sqrt(x^2+y^2)
-            costMatrix[i][j]=sqrt(pow(spots[i].x-spots[j].x,2)+pow(spots[i].y-spots[j].y,2)); 
+            switch(mod){
+                case 'd':
+                    costMatrix[i][j]=sqrt(pow(spots[i].x-spots[j].x,2)+pow(spots[i].y-spots[j].y,2)); 
+                    break;
+
+                case 'i':
+                    double dist1 = abs(spots[j].x-spots[i].x)+2*upperBound-(spots[i].y+spots[j].y);
+                    double dist2 = abs(spots[j].x-spots[i].x)+spots[i].y+spots[j].y;
+                    if (spots[i].x == spots[j].x){
+                        costMatrix[i][j] = abs(spot[i].y-spots[j].y);
+                        break;
+                    } else if (dist1 < dist2){
+                        costMatrix[i][j] = dist1;
+                    } else {
+                        costMatrix[i][j] = dist2;
+                    }
             }
+            
+        }
     }
 }
 //Prints the cost matrix in the Serial moniter. for debugging 
@@ -67,9 +85,9 @@ void printCostMatrix(){
 }
 
 //Uses all setup functions. Important to use the travelling robot code
-void routeInit(){
+void routeInit(char c){
     setupDestinations();
-    setupCostMatrix();
+    setupCostMatrix(c);
     printCostMatrix();
 }
 
@@ -91,7 +109,7 @@ void permuteDestinations(int l, int r)
         //Distance of current route
         double dist = 0;
         //Prints the route
-        for(int i = 0; i<r;i++)
+        for(int i = 0; i<r+1;i++)
         {
             Serial.print(spots[destinationsID[i]].id);
             // checks whether there are any stops left, and if there are adds the distance from current point to next
@@ -123,6 +141,18 @@ void permuteDestinations(int l, int r)
             
         }
     }
+
+}
+void setup(){
+  Serial.begin(9600);
+  delay(500);
+
+}
+void loop(){
+  routeInit('i');
+  delay(500);
+  permuteDestinations(1,numDest-1);
+  while (1>0);
 
 }
 
