@@ -8,19 +8,11 @@ Zumo32U4Encoders encoders;
 Zumo32U4Motors motors;
 
 
-double xdist = 10;
-double ydist = 10;
-double count = 0;
+//necessary values for the loop to work 
 bool XYdicration = true; //true for x og false for y
 double EncoderCount = 0;
+double count        = 0;
 
-
-
-struct lokation 
-{
-  int xvalue;
-  int yvalue;
-};
 
 
 void setup() 
@@ -31,14 +23,13 @@ void setup()
 
 void loop() 
 {
-  distCal(xdist);
+  distDrive(10,100);
   delay(1000);
-  distCal(xdist);
 
 }
 
 
-void distCal(double dist) 
+void distDrive(double dist, double speeds) 
 {
   resetEncoders();
   int f = 1;
@@ -53,12 +44,11 @@ void distCal(double dist)
     //Serial.println("Encoder1 count = " + (String)EncoderCount);
     while(f*encoders.getCountsRight()< f*count) 
     {   
-      motors.setSpeeds(f*111,f*100);
+      motors.setSpeeds(f*speeds,f*speeds);
     }
-      Serial.println("Kør");
-      motors.setSpeeds(0, 0);
-      
-    }
+      motors.setSpeeds(0, 0);    
+      resetEncoders();       
+   }
 }
 
 void resetEncoders() {

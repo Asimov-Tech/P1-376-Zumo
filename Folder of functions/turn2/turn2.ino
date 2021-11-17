@@ -8,20 +8,6 @@ Zumo32U4ButtonA buttonA;
 Zumo32U4Encoders encoders;
 Zumo32U4Motors motors;
 
-
-//This is a push commentary
-/* turnAngle is a 32-bit unsigned integer representing the amount
-the robot has turned since the last time turnSensorReset was
-called.  This is computed solely using the Z axis of the gyro, so
-it could be inaccurate if the robot is rotated about the X or Y
-axes.
-
-Our convention is that a value of 0x20000000 represents a 45
-degree counter-clockwise rotation.  This means that a uint32_t
-can represent any angle between 0 degrees and 360 degrees.  If
-you cast it to a signed 32-bit integer by writing
-(int32_t)turnAngle, that integer can represent any angle between
--180 degrees and 180 degrees. */
 uint32_t turnAngle = 0;
 int turnAngle2=turnAngle;
 // turnRate is the current angular rate of the gyro, in units of
@@ -36,91 +22,6 @@ int16_t gyroOffset;
 // between readings of the gyro.
 uint16_t gyroLastUpdate = 0;
 
-
-  //These are the variables for keeping track of how much the encoders have moved.
-  /*int16_t countsLeft = encoders.getCountsLeft();
-  int16_t countsRight = encoders.getCountsRight();
-*/
-  //Max distance the robot should drive
-  int travelMaxDistance=10;
-
-
-  //The amount of degrees the robot has turned
-  int turnAngleDegrees;
-
-
-  bool rotatCheck=false;
-
-  //The amount the robot has moved in cm
-  int travel_distance;
-
-
-  int16_t countsLeft = encoders.getCountsLeft();
-  int16_t countsRight = encoders.getCountsRight();
-
-void setup() 
-{
-  Serial.println(9600);
-  turnSensorSetup();
-  delay(500);
-  turnSensorReset();
-  lcd.clear();
-  
-}
-
-void loop() 
-{
-
-  turnSensorUpdate();
-  turnAngleDegrees=((((int32_t)turnAngle >> 16) * 360) >> 16);
-  lcd.gotoXY(0, 0);
-  lcd.print((((int32_t)turnAngle >> 16) * 360) >> 16);
-  lcd.print(F("   "));
-
-
-
-  turn90();
-  if(rotatCheck==true)
-  {
-    
-  }    
-}
-
-
-
-//This function makes the robot inbetween 90 and 91 degrees
-void turn90()
-{
-  while(ydriven==true)
-  {
-    if(turnAngleDegrees <= -90 && -91 <= turnAngleDegrees)
-    {
-      motors.setSpeeds(0, 0);
-      ydriven=false;
-      xdriven=false;  
-    }
-    else
-    {
-      motors.setSpeeds(100, -120);
-      imustart();
-      delay(10000);
-    }
-  }
-}
-
-
-
-
-
-//Ik rør ved noget herefter, dette er alt sammen Carlos kode der bliver brugt til gyro
-/* This should be called in setup() to enable and calibrate the
-gyro.  It uses the LCD, yellow LED, and button A.  While the LCD
-is displaying "Gyro cal", you should be careful to hold the robot
-still.
-
-The digital zero-rate level of the gyro can be as high as
-25 degrees per second, and this calibration helps us correct for
-that. */
 
 void turnSensorSetup()
 {
@@ -155,9 +56,6 @@ void turnSensorSetup()
   // Display the angle (in degrees from -180 to 180) until the
   // user presses A.
   lcd.clear();
-
-
-
 }
 
 
@@ -171,6 +69,8 @@ void turnSensorReset()
 
 // Read the gyro and update the angle.  This should be called as
 // frequently as possible while using the gyro to do turns.
+
+
 void turnSensorUpdate()
 {
   // Read the measurements from the gyro.
@@ -196,4 +96,70 @@ void turnSensorUpdate()
   // (0.07 dps/digit) * (1/1000000 s/us) * (2^29/45 unit/degree)
   // = 14680064/17578125 unit/(digit*us)
   turnAngle += (int64_t)d * 14680064 / 17578125;
+}
+//The amount of degrees the robot has turned
+int turnAngleDegrees;
+
+void imusetup()
+{
+  turnSensorUpdate();
+  turnAngleDegrees=((((int32_t)turnAngle >> 16) * 360) >> 16);
+  lcd.gotoXY(0, 0);
+  lcd.print((((int32_t)turnAngle >> 16) * 360) >> 16);
+  lcd.print(F("   "));
+}
+
+
+//Ik rør ved noget førhen, dette er alt sammen Carlos kode der bliver brugt til gyro
+/* This should be called in setup() to enable and calibrate the
+gyro.  It uses the LCD, yellow LED, and button A.  While the LCD
+is displaying "Gyro cal", you should be careful to hold the robot
+still.
+
+The digital zero-rate level of the gyro can be as high as
+25 degrees per second, and this calibration helps us correct for
+that. */
+
+
+
+
+
+void setup() 
+{
+  Serial.println(9600);
+  turnSensorSetup();
+  delay(500);
+  turnSensorReset();
+  lcd.clear();
+}
+
+
+
+void loop() 
+{
+imusetup();
+turn2(90, 100);
+}
+
+
+
+
+void turn2(int angle, int speeds) //The function takes in a angle and a speed
+{
+  bool finish = false;            //Used to check when the zumo has turned the angle degrees
+  int f = 1;
+  if(angle<0) f = -1;
+  while(finish  !=  true)         //A while loop that runs untill the robot has turned the amount of degrees
+  {
+    if(turnAngleDegrees >= angle && angle + 1>= turnAngleDegrees)
+    {
+      motors.setSpeeds(0, 0);
+      finish  = true;
+    }
+    else
+    {
+      motors.setSpeeds(f*-speeds, f*speeds);        //Changes the rotation dependent on the given angle
+      imusetup();
+    }
+  }
 }

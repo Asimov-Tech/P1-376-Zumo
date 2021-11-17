@@ -7,17 +7,16 @@ Zumo32U4ButtonA buttonA;
 Zumo32U4Encoders encoders;
 Zumo32U4Motors motors;
 
-//lul
-double xdist = 10;
-double ydist = 5;
+double xdist = ;
+double ydist = 10;
+
+
 double count = 0;
 double EncoderCount = 0;
+double theField = 10;
+double halfTheField  = 5;
 
 
-bool xdriven        = false;
-bool ydriven        = false;
-bool turnedminus90  = false;
-bool turned90       = false;
 
 /* turnAngle is a 32-bit unsigned integer representing the amount
   the robot has turned since the last time turnSensorReset was
@@ -48,11 +47,34 @@ uint16_t gyroLastUpdate = 0;
 //The amount of degrees the robot has turned
 int turnAngleDegrees;
 
-struct lokation 
+//These are the booleans values that the dependencies in the program relies on
+bool xdriven        = false;
+bool ydriven        = false;
+bool turnedminus90  = false;
+bool turned90       = false;
+
+
+bool notDriven  = false;
+
+void turn2(int angle, int speeds) //The function takes in a angle and a speed
 {
-  int xvalue;
-  int yvalue;
-};
+  bool finish = false;            //Used to check when the zumo has turned the angle degrees
+  int f = 1;
+  if(angle<0) f = -1;
+  while(finish  !=  true)         //A while loop that runs untill the robot has turned the amount of degrees
+  {
+    if(turnAngleDegrees >= angle && angle + 1>= turnAngleDegrees)
+    {
+      motors.setSpeeds(0, 0);
+      finish  = true;
+    }
+    else
+    {
+      motors.setSpeeds(f*-speeds, f*speeds);        //Changes the rotation dependent on the given angle
+      imustart();
+    }
+  }
+}
 
 
 void setup() 
@@ -63,136 +85,113 @@ void setup()
   turnSensorReset();
   lcd.clear();
   delay(500);
+  
 }
 
+/*This is the entire main loop, the loop only relies on 5 functions and works as intented
+*/
 void loop() 
+{
+  
+  imustart();
+  checkxdriven();
+  checkturn90();
+  checkydriven();
+  driveRestOfField();
+  delay(1000);        //Dette delay symboliserer at den opsamler havre.
+  checkturnminus90();
+  driveRestOfField();
+  
+  
+}
+
+
+
+void checkxdriven()
+{
+  while(xdriven==false)
+  {
+    distDriveX(xdist);   
+  }
+}
+
+
+//This function checks wether xdriven is true, if it is it turns 90 degrees and sets turned90 to true after execution
+
+void checkturn90()
+{
+  while(xdriven==true)
+  {
+    if(turnAngleDegrees >= 90 && 91 >= turnAngleDegrees)
+    {
+      motors.setSpeeds(0, 0);
+      turned90=true;
+      xdriven=false;
+      imustart();
+    }
+    else
+    {
+      motors.setSpeeds(-150, 150);
+      imustart();
+    }
+  }
+}
+
+
+//Same as the checkydriven just for the y coordinate.
+void checkydriven()
+{
+  while(turned90==true)
+  {
+    distDriveY(ydist);
+    ydriven=true;
+    turned90=false;
+    imustart();
+  }
+}
+
+//This functions makes the zumo turn minus 90 degrees after the ydriven has been run
+
+void checkturnminus90()
+{
+  while(ydriven==true)
+  {
+    if(turnAngleDegrees <= 1 && 0 <= turnAngleDegrees)
+    {
+      motors.setSpeeds(0, 0);
+      ydriven=false;
+      xdriven=false;  
+    }
+    else
+    {
+      motors.setSpeeds(100, -120);
+      imustart();
+    }
+  }
+}
+
+
+
+
+///This is important for the turn sensor and the lcd screen.
+void imustart()
 {
   turnSensorUpdate();
   turnAngleDegrees = ((((int32_t)turnAngle >> 16) * 360) >> 16);
   lcd.gotoXY(0, 0);
   lcd.print((((int32_t)turnAngle >> 16) * 360) >> 16);
   lcd.print(F("   "));
-
-  
-  owndistcalx();
-  
-  if(xdriven==true)
-  {
-    turn90();  
-  }
-
-  if(turned90==true)
-  {
-    
-    owndistcaly();
-    
-  }
-
-  
-
-  
 }
 
 
 
-void owndistcalx()
-{
-  int countdist = (((xdist * 0.788) * 900) / (PI * 3, 9));
-  if(EncoderCount < countdist)
-  {
-    getEncoder();
-    motors.setSpeeds(100,100);
-  }
-  else
-  {
-    motors.setSpeeds(0,0);
-    xdriven=true;
-  }
-}
-
-
-
-void owndistcaly()
-{
-  int countdist = (((ydist * 0.788) * 900) / (PI * 3, 9));
-  if(EncoderCount < countdist)
-  {
-    getEncoder();
-    motors.setSpeeds(100,100);
-  }
-  else
-  {
-    motors.setSpeeds(0,0);
-    ydriven=true;    
-  }
-}
-
-/*
-void distCal() 
-{
-  if (XYdicration == true) 
-  {
-    // dictance formlen omskrives for at få at finde hvor mange "counts der skal til på en distance
-    count = (((xdist * 0.788) * 900) / (PI * 3, 9)); // 0,785 er en værdi der ganges med fordi det virker
-    if (EncoderCount < count) 
-    {
-      getEncoder();
-      motors.setSpeeds(100, 110);// lav til funktion
-    }
-    else 
-    {
-      motors.setSpeeds(0, 0);
-    }
-  }
-}
-*/
-
-void getEncoder() 
-{
-  int countsR = countsR += encoders.getCountsRight();
-  int countsL = countsL += encoders.getCountsLeft();
-  EncoderCount = ((countsR + countsL) / 2) ;
-  return EncoderCount;
-}
-
+//Resets the encoders
 void resetEncoders() 
 {
   encoders.getCountsAndResetLeft();
   encoders.getCountsAndResetRight();
 }
 
-
-
-//This function makes the robot inbetween 90 and 91 degrees
-void turn90()
-{
-  
-  if (turnAngleDegrees >= 90 && 91 >= turnAngleDegrees)
-  {
-    motors.setSpeeds(0, 0);
-    turned90=true;
-  }
-  else
-  {
-    motors.setSpeeds(-120, 100);
-  }
-}
-
-
-
-void turnminus90()
-{
-  
-  if (turnAngleDegrees <= -90 && -91 <= turnAngleDegrees)
-  {
-    motors.setSpeeds(0, 0);
-    turnedminus90=true;
-  }
-  else
-  {
-    motors.setSpeeds(100, -120);
-  }
-}
 
 //Ik rør ved noget herefter, dette er alt sammen Carlos kode der bliver brugt til gyro
 /* This should be called in setup() to enable and calibrate the
