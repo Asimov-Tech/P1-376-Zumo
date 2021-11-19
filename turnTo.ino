@@ -45,7 +45,7 @@ void turnTo(int angle)
 
   while(done==false)
   {
-    if(turnAngleDegrees >= angle && angle + 1>= turnAngleDegrees)
+    if(turnAngleDegrees == angle)
     {//case if function is over
       motors.setSpeeds(0, 0);
       done=true;
