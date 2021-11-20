@@ -6,17 +6,24 @@ Zumo32U4IMU imu;
 Zumo32U4ButtonA buttonA;
 Zumo32U4Encoders encoders;
 Zumo32U4Motors motors;
+Zumo32U4Buzzer buzzer;
 
-double xdist = ;
-double ydist = 10;
+
+double xdist;
+double ydist;
+
+
+int xCoordinates[]  = { 10,  10, 10, 10, 10, 10};
+
+int yCoordinates[]  = { 7,  13, 6,  19,  8, 15};
+
+int coordinatePlace = 0;
 
 
 double count = 0;
 double EncoderCount = 0;
-double theField = 10;
-double halfTheField  = 5;
-
-
+double theField = 20;
+double halfTheField  = theField/2;
 
 /* turnAngle is a 32-bit unsigned integer representing the amount
   the robot has turned since the last time turnSensorReset was
@@ -56,6 +63,10 @@ bool turned90       = false;
 
 bool notDriven  = false;
 
+
+int topOrBut;                     //An integer that symbolises wether the zumo is on the top of the field or the buttom. The value is used to decide wether the robot should move in the negative y-coordinate
+                                     // If it is 1 then the robot is at the buttom, if it is -1 the robot is at the top.
+
 void turn2(int angle, int speeds) //The function takes in a angle and a speed
 {
   bool finish = false;            //Used to check when the zumo has turned the angle degrees
@@ -85,24 +96,40 @@ void setup()
   turnSensorReset();
   lcd.clear();
   delay(500);
-  
 }
 
 /*This is the entire main loop, the loop only relies on 5 functions and works as intented
 */
 void loop() 
 {
-  
+
   imustart();
+  nextCoordinates();
+  //Serial.println("This is the x-coordinate " + String(xdist));
+  //Serial.println("This is the y-coordinate " + String(ydist));
   checkxdriven();
   checkturn90();
+  //Serial.println("gets here");
   checkydriven();
-  driveRestOfField();
+  //Serial.println("gets here2");
   delay(1000);        //Dette delay symboliserer at den opsamler havre.
-  checkturnminus90();
   driveRestOfField();
-  
-  
+  checkturnminus90();
+
+
+
+
+}
+
+
+//------------Functions---------------------Functions-------------------------Functions-------------------------Functions-------------------------Functions-------------------------Functions-------------------------Functions------------------------
+
+
+void nextCoordinates()      //This function just increments a number to get the next coordinates.
+{
+  ydist=yCoordinates[coordinatePlace];
+  xdist=xCoordinates[coordinatePlace];
+  coordinatePlace++;
 }
 
 
@@ -143,8 +170,11 @@ void checkydriven()
 {
   while(turned90==true)
   {
+    //Serial.println("gets here3");
     distDriveY(ydist);
+    //Serial.println("gets here4");
     ydriven=true;
+    
     turned90=false;
     imustart();
   }
@@ -161,6 +191,7 @@ void checkturnminus90()
       motors.setSpeeds(0, 0);
       ydriven=false;
       xdriven=false;  
+      notDriven=false;
     }
     else
     {

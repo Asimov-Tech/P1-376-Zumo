@@ -3,15 +3,17 @@ void driveRestOfField()
 {
   while(notDriven ==  false)
   {
-    if(xdist<halfTheField)
+    if(ydist<halfTheField)
     {
-      distDriveX(-xdist);
+      distDriveY(-ydist);
       notDriven=true;
+      topOrBut=1;
     }
     else
     {
-      distDriveX(theField-xdist);
+      distDriveY(theField-ydist);
       notDriven=true;
+      topOrBut=-1;
     }
   }
 }
