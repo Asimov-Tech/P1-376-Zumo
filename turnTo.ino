@@ -1,5 +1,10 @@
 #include <Wire.h>
 #include <Zumo32U4.h>
+//Library dependencies:
+// Zumo32U4Motors motors;
+// Zumo32U4IMU imu;
+// Zumo32U4LCD lcd;
+
 
 /* turnAngle is a 32-bit unsigned integer representing the amount
   the robot has turned since the last time turnSensorReset was
