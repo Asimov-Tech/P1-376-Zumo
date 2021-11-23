@@ -15,14 +15,14 @@ double ydist;
 
 int xCoordinates[]  = { 10,  10, 10, 10, 10, 10};
 
-int yCoordinates[]  = { 7,  13, 6,  19,  8, 15};
+int yCoordinates[]  = { 20,  50, 40,  80,  70, 10};
 
 int coordinatePlace = 0;
 
 
 double count = 0;
 double EncoderCount = 0;
-double theField = 20;
+double theField = 100;
 double halfTheField  = theField/2;
 
 /* turnAngle is a 32-bit unsigned integer representing the amount
