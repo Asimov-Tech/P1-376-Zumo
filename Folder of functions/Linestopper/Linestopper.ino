@@ -44,10 +44,9 @@ bool rotateCheck=false;
 
 void loop() 
 {
-
-  imustart();
-  turn90();
-  lineCheckAndStop();
+  printSensor();
+  lineChecker();
+  
   
 }
 
@@ -58,14 +57,15 @@ void lineCheckAndStop()
      printSensor();
      readSensors(sensorState);
      
-    if(left==true && Center == true && right  ==  true) //If sensorState bool on the left sensor is true and if we haven't crossed the first line
+    if(left==false && Center == false && right  ==  false) //If sensorState bool on the left sensor is true and if we haven't crossed the first line
     {
-        motors.setSpeeds(0, 0);               //Begin to drive faster toward second line
-        delay(2000);
+      motors.setSpeeds(75 , 75);
+        
     }
     else
     {
-      motors.setSpeeds(75 , 75);
+      motors.setSpeeds(0, 0);               //Begin to drive faster toward second line
+      delay(2000);
     }
 }
 
@@ -84,22 +84,42 @@ void printSensor()
 void readSensors(LineSensorsWhite& state) {  // Next line reads the sensor values and store them in the array lineSensorValues
     lineSensors.read(sensorValues, useEmitters ? QTR_EMITTERS_ON : QTR_EMITTERS_OFF); //Retrieves data from sensors
     state = {false,false,false,false,false}; // state of the sensors is ALWAYS set to negative in the structure, so that the if statements below only change the boolean to true when the conditions are met
-    if (sensorValues[0] < 300) {
+    if (sensorValues[0] < 350) {
         state.left = true;
         left=true;
     }
     /*if (sensorValues[1] < threshold) {
         state.leftCenter = true;
     }*/
-    if (sensorValues[2] < 150) {
+    if (sensorValues[2] < 250) {
         state.Center = true;
         Center=true;
     }
     /*if (sensorValues[3] < threshold) {
         state.rightCenter = true;
     }*/
-    if (sensorValues[4] < 300) {
+    if (sensorValues[4] < 350) {
         state.right = true;
         right=true;
     }
+}
+
+
+void lineChecker()
+{
+  if(left=true)
+  {
+    motors.setSpeeds(0, 75);
+  }
+
+  if(Center=true)
+  {
+    motors.setSpeeds(0, 0);
+  }
+
+  if(right=true)
+  {
+    motors.setSpeeds(75, 0);
+  }
+  
 }
