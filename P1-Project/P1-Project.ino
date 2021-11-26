@@ -15,7 +15,11 @@ double ydist;
 
 int xCoordinates[]  = { 10,  10, 10, 10, 10, 10};
 
-int yCoordinates[]  = { 20,  50, 40,  80,  70, 10};
+int yCoordinates[]  = { 20,  60, 40,  80,  70, 10};
+
+
+
+
 
 int coordinatePlace = 0;
 
@@ -74,7 +78,7 @@ void turn2(int angle, int speeds) //The function takes in a angle and a speed
   if(angle<0) f = -1;
   while(finish  !=  true)         //A while loop that runs untill the robot has turned the amount of degrees
   {
-    if(turnAngleDegrees >= angle && angle + 1>= turnAngleDegrees)
+    if(turnAngleDegrees = 90)
     {
       motors.setSpeeds(0, 0);
       finish  = true;
