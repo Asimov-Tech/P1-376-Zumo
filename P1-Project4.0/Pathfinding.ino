@@ -8,25 +8,13 @@ void driveRestOfField()
     {
       distDriveY(-ydist);
       notDriven=true;
+      topOrBut=1;
     }
     else
     {
       distDriveY(theField-ydist);
       notDriven=true;
+      topOrBut=-1;
     }
-  }
-}
-
-
-
-void topBut()
-{
-    if(ydist<halfTheField)
-  {
-    topOrBut=1;
-  }
-  else
-  {
-    topOrBut=-1;
   }
 }

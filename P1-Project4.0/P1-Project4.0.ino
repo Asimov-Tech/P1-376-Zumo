@@ -63,11 +63,14 @@ bool xdriven        = false;
 bool ydriven        = false;
 bool turnedminus90  = false;
 bool turned90       = false;
+bool turnedZero     = false;
 
 
 bool notDriven  = false;
 
-bool topOrBut;             // If it is true then the robot is at the buttom, if it is false the robot is at the top.
+
+int topOrBut;                     //An integer that symbolises wether the zumo is on the top of the field or the buttom. The value is used to decide wether the robot should move in the negative y-coordinate
+                                     // If it is 1 then the robot is at the buttom, if it is -1 the robot is at the top.
 
 void turn2(int angle, int speeds) //The function takes in a angle and a speed
 {
@@ -104,33 +107,27 @@ void setup()
 */
 void loop() 
 {
-  /*
+
   imustart();
   nextCoordinates();
   //Serial.println("This is the x-coordinate " + String(xdist));
   //Serial.println("This is the y-coordinate " + String(ydist));
   checkxdriven();
-  checkturn90(-1);
+  if(topOrBut=-1)
+  {
+    checkturnminus90();
+  }
+  else
+  {
+    checkturn90();
+  }
+  
+  
   //Serial.println("gets here");
   checkydriven();
   //Serial.println("gets here2");
   delay(1000);        //Dette delay symboliserer at den opsamler havre.
   driveRestOfField();
-*/
-xdriven=true;
-if(topOrBut ==  -1)
-{
-  distDriveY(theField-ydist); 
-}
-
-
-
-checkturn90(false);
-delay(1000);
-
-
-
-
 }
 
 
@@ -157,13 +154,11 @@ void checkxdriven()
 
 //This function checks wether xdriven is true, if it is it turns 90 degrees and sets turned90 to true after execution
 
-void checkturn90(bool direction)
+void checkturn90()
 {
-  int f = 1;
-  if(direction  ==  false)  f=-1;
   while(xdriven==true)
   {
-    if(turnAngleDegrees ==  f*90)
+    if(turnAngleDegrees ==  90)
     {
       motors.setSpeeds(0, 0);
       turned90=true;
@@ -172,7 +167,26 @@ void checkturn90(bool direction)
     }
     else
     {
-      motors.setSpeeds(f*-150, f*150);
+      motors.setSpeeds(-150, 150);
+      imustart();
+    }
+  }
+}
+
+
+void checkturnZero()
+{
+  while(turnedZero==false)
+  {
+    if(turnAngleDegrees ==  0)
+    {
+      motors.setSpeeds(0, 0);
+      imustart();
+      turnedZero=true;
+    }
+    else
+    {
+      motors.setSpeeds(-150, 150);
       imustart();
     }
   }
@@ -194,8 +208,27 @@ void checkydriven()
   }
 }
 
+//This functions makes the zumo turn minus 90 degrees after the ydriven has been run
 
-
+void checkturnminus90()
+{
+  while(ydriven==true)
+  {
+    if(turnAngleDegrees ==  0)
+    {
+      motors.setSpeeds(0, 0);
+      ydriven=false;
+      xdriven=false;  
+      notDriven=false;
+      turned90=true;
+    }
+    else
+    {
+      motors.setSpeeds(100, -120);
+      imustart();
+    }
+  }
+}
 
 
 

@@ -8,25 +8,16 @@ void driveRestOfField()
     {
       distDriveY(-ydist);
       notDriven=true;
+      topOrBut=1;
+      //Serial.println("hva gud");
     }
     else
     {
       distDriveY(theField-ydist);
       notDriven=true;
+      topOrBut=-1;
+      //Serial.println("hva satan");
+      //Serial.println(topOrBut);
     }
-  }
-}
-
-
-
-void topBut()
-{
-    if(ydist<halfTheField)
-  {
-    topOrBut=1;
-  }
-  else
-  {
-    topOrBut=-1;
   }
 }

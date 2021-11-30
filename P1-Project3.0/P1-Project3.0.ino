@@ -17,10 +17,6 @@ int xCoordinates[]  = { 10,  10, 10, 10, 10, 10};
 
 int yCoordinates[]  = { 20,  60, 40,  80,  70, 10};
 
-
-
-
-
 int coordinatePlace = 0;
 
 
@@ -28,6 +24,12 @@ double count = 0;
 double EncoderCount = 0;
 double theField = 100;
 double halfTheField  = theField/2;
+
+
+
+//Bools for loop
+bool checkturnedminus90;
+bool checkturned90;
 
 /* turnAngle is a 32-bit unsigned integer representing the amount
   the robot has turned since the last time turnSensorReset was
@@ -67,7 +69,9 @@ bool turned90       = false;
 
 bool notDriven  = false;
 
-bool topOrBut;             // If it is true then the robot is at the buttom, if it is false the robot is at the top.
+
+int topOrBut=1;                     //An integer that symbolises wether the zumo is on the top of the field or the buttom. The value is used to decide wether the robot should move in the negative y-coordinate
+                                     // If it is 1 then the robot is at the buttom, if it is -1 the robot is at the top.
 
 void turn2(int angle, int speeds) //The function takes in a angle and a speed
 {
@@ -104,33 +108,32 @@ void setup()
 */
 void loop() 
 {
-  /*
-  imustart();
-  nextCoordinates();
-  //Serial.println("This is the x-coordinate " + String(xdist));
-  //Serial.println("This is the y-coordinate " + String(ydist));
-  checkxdriven();
-  checkturn90(-1);
-  //Serial.println("gets here");
-  checkydriven();
-  //Serial.println("gets here2");
-  delay(1000);        //Dette delay symboliserer at den opsamler havre.
-  driveRestOfField();
-*/
-xdriven=true;
-if(topOrBut ==  -1)
-{
-  distDriveY(theField-ydist); 
+  botFunctions();
 }
 
 
 
-checkturn90(false);
-delay(1000);
 
-
-
-
+void botFunctions()
+{
+  imustart();
+  nextCoordinates();
+  distDriveX(xdist);
+  if(topOrBut == -1)
+    { 
+      checkturnminus90();
+      Serial.println("gets here");
+    }
+    else
+    {
+      checkturn90();
+    }
+  //Serial.println("gets here");
+  distDriveY(ydist);
+  //Serial.println("gets here2");
+  delay(1000);        //Dette delay symboliserer at den opsamler havre.
+  driveRestOfField();
+  turn2(0,100);
 }
 
 
@@ -152,47 +155,41 @@ void checkxdriven()
   {
     distDriveX(xdist);   
   }
+  xdriven = true;
+  checkturnedminus90  = false;
+  checkturned90       = false;
 }
 
 
-//This function checks wether xdriven is true, if it is it turns 90 degrees and sets turned90 to true after execution
 
-void checkturn90(bool direction)
+
+
+void checkturnminus90()
 {
-  int f = 1;
-  if(direction  ==  false)  f=-1;
-  while(xdriven==true)
+  while(xdriven  ==  true)
   {
-    if(turnAngleDegrees ==  f*90)
-    {
-      motors.setSpeeds(0, 0);
-      turned90=true;
-      xdriven=false;
-      imustart();
-    }
-    else
-    {
-      motors.setSpeeds(f*-150, f*150);
-      imustart();
-    }
-  }
-}
-
-
-//Same as the checkydriven just for the y coordinate.
-void checkydriven()
-{
-  while(turned90==true)
-  {
-    //Serial.println("gets here3");
-    distDriveY(ydist);
-    //Serial.println("gets here4");
-    ydriven=true;
+    turn2(-90,100);
+    checkturnedminus90  ==  true;
+    xdriven=false;
     
-    turned90=false;
-    imustart();
-  }
+  }  
 }
+
+
+void checkturn90()
+{
+  while(xdriven  ==  true)
+  {
+    turn2(-90,100);
+    checkturned90  ==  true;
+    xdriven=false;
+    
+  }  
+}
+
+
+
+
 
 
 
