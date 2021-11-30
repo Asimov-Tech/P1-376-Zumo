@@ -67,9 +67,7 @@ bool turned90       = false;
 
 bool notDriven  = false;
 
-
-int topOrBut;                     //An integer that symbolises wether the zumo is on the top of the field or the buttom. The value is used to decide wether the robot should move in the negative y-coordinate
-                                     // If it is 1 then the robot is at the buttom, if it is -1 the robot is at the top.
+bool topOrBut;             // If it is true then the robot is at the buttom, if it is false the robot is at the top.
 
 void turn2(int angle, int speeds) //The function takes in a angle and a speed
 {
@@ -106,19 +104,22 @@ void setup()
 */
 void loop() 
 {
-
+  /*
   imustart();
   nextCoordinates();
   //Serial.println("This is the x-coordinate " + String(xdist));
   //Serial.println("This is the y-coordinate " + String(ydist));
   checkxdriven();
-  checkturn90();
+  checkturn90(-1);
   //Serial.println("gets here");
   checkydriven();
   //Serial.println("gets here2");
   delay(1000);        //Dette delay symboliserer at den opsamler havre.
   driveRestOfField();
-  checkturnminus90();
+*/
+xdriven=true;
+checkturn90(false);
+delay(1000);
 
 
 
@@ -149,11 +150,13 @@ void checkxdriven()
 
 //This function checks wether xdriven is true, if it is it turns 90 degrees and sets turned90 to true after execution
 
-void checkturn90()
+void checkturn90(bool direction)
 {
+  int f = 1;
+  if(direction  ==  false)  f=-1;
   while(xdriven==true)
   {
-    if(turnAngleDegrees >= 90 && 91 >= turnAngleDegrees)
+    if(turnAngleDegrees ==  f*90)
     {
       motors.setSpeeds(0, 0);
       turned90=true;
@@ -162,7 +165,7 @@ void checkturn90()
     }
     else
     {
-      motors.setSpeeds(-150, 150);
+      motors.setSpeeds(f*-150, f*150);
       imustart();
     }
   }
@@ -184,26 +187,8 @@ void checkydriven()
   }
 }
 
-//This functions makes the zumo turn minus 90 degrees after the ydriven has been run
 
-void checkturnminus90()
-{
-  while(ydriven==true)
-  {
-    if(turnAngleDegrees ==  0)
-    {
-      motors.setSpeeds(0, 0);
-      ydriven=false;
-      xdriven=false;  
-      notDriven=false;
-    }
-    else
-    {
-      motors.setSpeeds(100, -120);
-      imustart();
-    }
-  }
-}
+
 
 
 
