@@ -90,13 +90,19 @@ void location(){ //function compiling all the other functions
 }
 
 void driving(){ //function that does the whole driving thing
+  
   continuing();
   delay(500);
   driveToSpot();
   delay(500);
-  returning();
-  delay(500);
-}
+  if(wildOats[0][i+1] == wildOats[0][i+2]){
+    sameLine();
+    delay(500);
+  }
+    returning();
+    delay(500);
+  }
+
 
 bool cali = true; //A bool that makes it calibrate the gyro once
 
@@ -105,6 +111,7 @@ void setup() {
   Serial.begin(9600);
   lineSensors.initFiveSensors();
   readSensors(sensorsState);
+  routeCal('i');
   delay(1000);
 }
 void loop() {

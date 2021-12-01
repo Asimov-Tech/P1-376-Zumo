@@ -10,7 +10,7 @@ Zumo32U4IMU imu;
 Zumo32U4LineSensors lineSensors;
 Zumo32U4ButtonA buttonA;
 
-const int numDest = 6;
+const int numDest = 10;
 double x = 0, y = 0, pose = 0, temp, deg = 0; //the x coordinate, the y coordinate, the position angle compared to the x-axis given in radians, "deg" For cenverting radians to degrees 
 //Distance on the right and left will always come from an equal amount of time
 double distRight, distLeft; //the dist traveled on the right wheel, dist traveled on left wheel, counts from 
@@ -23,7 +23,7 @@ int rememberCounts[2] = {0,0}; //a vector to remember the counts
 
 int i = 0; //Iterations of the for-loop
 int maxY = 100; //The max y-distance on the field
-int wildOats[2][numDest] = {{0,0,70,80,60,20},{0,60,40,30,10,20}}; //An array describing the positions of the wild oats
+int wildOats[2][numDest];//An array describing the positions of the wild oats
 
 #define NUM_SENSORS 5 //Number of activated sensors
 uint16_t lineSensorValues[NUM_SENSORS]; //Some array that contains the raw read values from the sensors between 0-2000
@@ -84,6 +84,21 @@ void driveToSpot(){ //Function driving the robot to the y-value of the wild oat
     delay(100);
     turnStraight(); //This will be used when the robot has to drive out in the field
 }
+
+
+void sameLine(){
+  if (wildOats[1][i+1] < wildOats[1][i+2]){
+    turnLeft();
+    driveDist(wildOats[1][i+2]-wildOats[1][i+1]);
+  }
+  else {
+    turnRight();
+    driveDist(wildOats[1][i+1]-wildOats[1][i+2]);
+    }
+    turnStraight();
+    i++;
+ }
+  
 
 void returning(){ //A function that returns the robot to either the x-axis or the max y-value of the field
   //depending on wether it is closer to the max y-value or the x-axis
@@ -157,22 +172,22 @@ void driveDist (double dist) {
       //if loop so that it avoids driving unevenly 
       if(sensorsState.C == true && sensorsState.RC == true){ //f*rememberCounts[0]*1.001 > f*rememberCounts[1]
         // when right counter is higher, the left motor goes to 300 speed for a moment to even out
-        motors.setSpeeds(f*130,f*100); 
+        motors.setSpeeds(f*160,f*100); 
         delay(1);
 
       } else if (sensorsState.LC == true && sensorsState.C == true){ //f*rememberCounts[0]*1.001 < f*rememberCounts[1]
         //Same as above but with other motor
-        motors.setSpeeds(f*100,f*130);
+        motors.setSpeeds(f*100,f*160);
         delay(1);
       }
       else if (sensorsState.LC == true){ //f*rememberCounts[0]*1.001 < f*rememberCounts[1]
         //Same as above but with other motor
-        motors.setSpeeds(f*100,f*150);
+        motors.setSpeeds(f*100,f*180);
         delay(1);}
         
         else if (sensorsState.RC == true){ //f*rememberCounts[0]*1.001 < f*rememberCounts[1]
         //Same as above but with other motor
-        motors.setSpeeds(f*150,f*100);
+        motors.setSpeeds(f*180,f*100);
         delay(1);}
       else {
         motors.setSpeeds(f*100,f*100);//standard speed
