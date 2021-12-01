@@ -3,7 +3,7 @@
 
 
 
-const int numDest = 18; //amount of destinations. tested up to 18. took around 2 seconds on arduino UNO (~100 times less processing than zumo)
+const int numDest = 10; //amount of destinations. tested up to 18. took around 2 seconds on arduino UNO (~100 times less processing than zumo)
 //With 16 spots it took around 0.15 secs if all print functionality and delay was removed.
 //Does not alway come with optimal solution
 struct Destination{
@@ -17,63 +17,7 @@ struct Route{
     int stops[numDest+1];//Ordered array containing the tour stops. +1 so it can return to start
     double dist;
 };
-/*
-void getCommands(int i, int r){
-    //If there are no additional destinations
-    if(i == r){
-        //Prints message that job is completed
-        lcd.gotoXY(0,0);
-        lcd.print("  Task  ");
-        lcd.gotoXY(0,1);
-        lcd.print("Complete"):
 
-    } else {
-        //Defines local variables. xDist is distance that must be travelled along x-axis
-        //yDist 1 is distance that must be traveled first along y-axis (in case multiple commands are needed)
-        double xDist, yDist1, yDist2;
-        xDist = spots[i].x - spots[i+1].x;
-
-        if(xDist != 0){//If the x-distance is not 0 mutliple yDist are needed
-            //This if statement figures out whether the best route is along the upper or lower bound and calculates distances accordingly
-            if(upperbound < spots[i].y+spots[i+1].y){
-                yDist1 =  upperBound - spots[i].y;
-                yDist2 = -upperbound + spots[i+1].y;
-            } else {
-                yDist1 = -spots[i].y;
-                yDist2 =  spots[i+1].y;
-            }
-        } else {
-            //If there xDist is 0 it is only needed to travel along the y-axis once, so only one distance is defined (as non-0)
-            yDist1 = spots[i+1].y-spots[i].y;
-            yDist2 = 0;
-        }
-
-        //The following 3 switch statements figures out how the robot needs to align itself compared to the global coordinate system. 
-        //0 is along initial allignment (the way the robot was initially pointed). -90 is 90 degrees clockwise compared to initial allignment. 
-        //90 is 90 degrees counterclockwise compared to initial allignment and -180 is opposite the initial allignment.
-        //After each switch statement a driving functions executes
-        switch(true){
-            case (yDist1 > 0): turnTo(-90); break;
-            case (yDist1 < 0): turnTo(90); break; 
-        }
-        driveDist(xDist);
-
-        switch(true){
-            case (xDist > 0): turnTo(0); break;
-            case (xDist < 0): turnTo(-180); break; 
-        }
-        driveDist(xDist);
-
-        switch(true){
-            case (yDist2 > 0): turnTo(-90); break;
-            case (yDist2 < 0): turnTo(90); break; 
-        }
-        driveDist(yDist2);
-        //Reiterates through the command
-        getCommands(i+1,r)
-    }
-}
-*/
 Route route = {{},0}; //declaration of the used route (gets edited along the way)
 
 
@@ -88,19 +32,10 @@ Destination spots[numDest] ={
     {'F', 14, 93},
     {'G',  6, 19},
     {'H', 14, 48},
-    {'I', 87, 12},
-    {'J', 16, 68},
-    {'K', 69, 39},
-    {'L', 96, 69},
-    {'M', 15, 60},
-    {'N', 30, 91},
-    {'P', 95, 77},
-    {'Q', 18, 84},
-    {'R', 44, 39}
+    {'I', 87, 12}
 };
-
+int upperBound = 100;
 //upper bound of field (used for augmented cost matrix)
-int upperBound = 10;
 double costMatrix[numDest][numDest];
 //Sets up a cost matrix with direct routes between points
 void setupCostMatrix(char mod)//uses d for direct and i for indirect
@@ -259,18 +194,19 @@ void printDest(){
 
 void setup(){
   Serial.begin(9600);
-  delay(500);
-  routeInit('d');
-  delay(1000);
+  routeCal('i');
 }
 void loop(){
-  route = {{},0};
-  TSP();
-  delay(10000);
-
-
-
-
 }
 
+int coor[2][numDest+1];
 
+void routeCal(char mode){
+    routeInit(mode);
+    route = {{},0};
+    TSP();
+    for(int i = 0; i<numDest+1;i++){
+      coor[0][i] = spots[route.stops[i]].x;
+      coor[1][i] = spots[route.stops[i]].y;
+    }
+}
