@@ -10,6 +10,7 @@ Zumo32U4IMU imu;
 Zumo32U4LineSensors lineSensors;
 Zumo32U4ButtonA buttonA;
 
+const int numDest = 6;
 double x = 0, y = 0, pose = 0, temp, deg = 0; //the x coordinate, the y coordinate, the position angle compared to the x-axis given in radians, "deg" For cenverting radians to degrees 
 //Distance on the right and left will always come from an equal amount of time
 double distRight, distLeft; //the dist traveled on the right wheel, dist traveled on left wheel, counts from 
@@ -22,7 +23,7 @@ int rememberCounts[2] = {0,0}; //a vector to remember the counts
 
 int i = 0; //Iterations of the for-loop
 int maxY = 100; //The max y-distance on the field
-int wildOats[2][5] = {{0,10,30,60,90},{0,30,90,10,60}}; //An array describing the positions of the wild oats
+int wildOats[2][numDest] = {{0,0,70,80,60,20},{0,60,40,30,10,20}}; //An array describing the positions of the wild oats
 
 #define NUM_SENSORS 5 //Number of activated sensors
 uint16_t lineSensorValues[NUM_SENSORS]; //Some array that contains the raw read values from the sensors between 0-2000
@@ -44,12 +45,6 @@ LineSensorsWhite sensorsState = {0, 0, 0};
 int threshold[NUM_SENSORS] = {400, 400, 400, 400, 400};
 
 
-
-
-
-
-
-
 void returnYmax(){ //Drives the distance needed to go from current y-position to the max y-value on the field 
   driveDist(maxY - poseVector[1]);
   resetCounts();//Reseting the encoder counts as to not confuse the "location" function
@@ -61,7 +56,12 @@ void returnTo0(){ //Driving the distance needed to go from the current y-positio
 }
 
 void continuing(){
-  driveDist(wildOats[0][i+1]-wildOats[0][i]); //Drives to the x-coordinate of the wild oat (Maybe change this to (wildOats[0][i+1]-poseVector[0]))
+  if ((wildOats[0][i+1])<wildOats[0][i]){
+    driveDist((wildOats[0][i]-wildOats[0][i+1]));
+  }
+  else{
+    driveDist(wildOats[0][i+1]-wildOats[0][i]); //Drives to the x-coordinate of the wild oat (Maybe change this to (wildOats[0][i+1]-poseVector[0]))
+  }
   resetCounts();
   delay(100);
   //If-statement that determines wether the robot should turn right or left before driving on the y-axis
@@ -87,17 +87,23 @@ void driveToSpot(){ //Function driving the robot to the y-value of the wild oat
 
 void returning(){ //A function that returns the robot to either the x-axis or the max y-value of the field
   //depending on wether it is closer to the max y-value or the x-axis
-  double xRoute = wildOats[1][i] + wildOats[1][i+1];
-  double yRoute = (maxY-wildOats[1][i]) +(maxY-wildOats[1][i+1]);
+  double xRoute = wildOats[1][i+1] + wildOats[1][i+2];
+  double yRoute = (maxY-wildOats[1][i+1]) +(maxY-wildOats[1][i+2]);
   if (xRoute >= yRoute){
     turnLeft();
     returnYmax();
-    turnStraight();
+    if (wildOats[0][i+2]<wildOats[0][i+1]){
+    turnBackward();}
+    else{
+    turnStraight();}
   }
   else {
    turnRight();
    returnTo0();
-   turnStraight();
+   if (wildOats[0][i+2]<wildOats[0][i+1]){
+    turnBackward();}
+    else{
+    turnStraight();}
   }
 }
 

@@ -117,10 +117,11 @@ void turn2(int angle, int speeds) //The function takes in a angle and a speed
   bool finish = false;            //Used to check when the zumo has turned the angle degrees
   int f = 1;
   speeds = 150;
-  if(Position-(angle)>0) f = -1;
+  if(Position>angle) f = -1;
+  if(Position-angle>180 || Position-angle<-180) f = -f;
   while(finish  !=  true)         //A while loop that runs untill the robot has turned the amount of degrees
   {
-    if(turnAngleDegrees == angle-2)
+    if(turnAngleDegrees == angle)
     {
       motors.setSpeeds(0, 0);
       finish  = true;

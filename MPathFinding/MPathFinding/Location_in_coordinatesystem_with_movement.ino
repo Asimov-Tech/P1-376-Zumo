@@ -16,6 +16,10 @@ void turning(int angle, int speeds){ //Functiion that turns the robot to a speci
   turn2(angle,speeds); //Makes it turn
 }
 
+void turnBackward(){
+  turning(-179,100); //if the x-coordinate of the next wild oat is less than the current x-position, it need to turn around to drive forward otherwise it reverses, which it can't do straight
+  resetCounts();
+}
 
 void turnLeft(){//Short function that makes it turn to the left (face parallell to the global y-axis)
   turning(90,100);
@@ -101,16 +105,16 @@ void setup() {
   Serial.begin(9600);
   lineSensors.initFiveSensors();
   readSensors(sensorsState);
-  delay(5000);
+  delay(1000);
 }
 void loop() {
   while (cali == true){ //While-statement that calibrates the gyro
     calibrating();
     cali = false;
   }
-  for (i = 0; i < 6; i++){ //For-loop to make it go through every wild oat
+  for (i = 0; i < numDest; i++){ //For-loop to make it go through every wild oat
   driving();
-  delay(1000);
   }
+  delay(10000);
 }
   
