@@ -1,4 +1,4 @@
-#include <Wire.h>
+ #include <Wire.h>
 //#include <Zumo32U4.h>
 
 
@@ -23,18 +23,42 @@ Route route = {{},0}; //declaration of the used route (gets edited along the way
 
 //Destinations with coordinates
 Destination spots[numDest] ={
-    {'O',  0,  0},
-    {'A',  0, 20},
-    {'B', 60, 30},
-    {'C', 40, 70},
-    {'D', 90, 90},
-    {'E', 30, 70},
-    {'F', 40, 20},
-    {'G', 20, 80},
-    {'H',100, 40},
-    {'I', 50, 30}
+    {'O', 0,  0},
+    {'A', 40, 20},
+    {'B', 10, 20},
+    {'C', 70, 30},
+    {'D', 0, 40},
+    {'E', 20, 30},
+    {'F', 10, 20},
+    {'G', 30, 40},
+    {'H', 20, 20},
+    {'I', 90, 10},
+    {'J', 50, 60},
+    {'K', 30, 70},
+    {'L', 20, 100},
+    {'M', 100, 100},
+    {'N', 10, 100}
 };
-int upperBound = 100;
+
+void fillDestRand(){
+    char lettersNoO[25] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','P','Q','R','S','T','U','V','W','X','Y','Z'};
+    spots[0].id = 'O';
+    spots[0].x = 0;
+    spots[0].y = 0;
+    for(int i = 1; i < numDest; i++){
+        spots[i].x = 10*(random() % 11);
+        spots[i].y = 10*(random() % 10);
+        spots[i].id = lettersNoO[i-1];
+        delay(1);
+    }
+    Serial.println("Printing destinations");
+    for(int i = 0; i < numDest; i++){
+        Serial.println((String)spots[i].id + "(" + (String)spots[i].x + ", " + (String)spots[i].y + ")");
+    }
+}
+
+
+int upperBound = 90;
 //upper bound of field (used for augmented cost matrix)
 double costMatrix[numDest][numDest];
 //Sets up a cost matrix with direct routes between points
@@ -82,7 +106,7 @@ void printCostMatrix(){
 //Uses all setup functions. Important to use the travelling robot code
 void routeInit(char c){
     setupCostMatrix(c);
-    printCostMatrix();
+    //printCostMatrix();
 }
 
 //Swaps 2 integer variables' values
@@ -127,7 +151,7 @@ void nnSolution(int startIndex){
             //the index value is added to list
             route.stops[i] = currentIndex;
             //information text (for debugging - commented out now)
-            Serial.println("Added stop " + (String)spots[currentIndex].id + ", for new total distance " + (String)route.dist);
+            //Serial.println("Added stop " + (String)spots[currentIndex].id + ", for new total distance " + (String)route.dist);
 
         }
             //when all stops have been visited, travels to startpoint again

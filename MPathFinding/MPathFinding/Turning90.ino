@@ -112,16 +112,18 @@ that. */
 
 
 
-void turn2(int angle, int speeds) //The function takes in a angle and a speed
+void turn2(int angle) //The function takes in a angle and a speed
 {
   bool finish = false;            //Used to check when the zumo has turned the angle degrees
   int f = 1;
-  speeds = 120;
-  if(Position>angle) f = -1;
+  int speeds = 120;
+  int angle2 = angle;
+  if(Position>angle) f = -1; //Using the old position angle to determine which direction it should spin, to spin the least.
   if(Position-angle>180 || Position-angle<-180) f = -f;
+  if(angle < 0){angle = angle + 2;} else {angle = angle - 2;}
   while(finish  !=  true)         //A while loop that runs untill the robot has turned the amount of degrees
   {
-    if(turnAngleDegrees == angle)
+    if(turnAngleDegrees == (angle))
     {
       motors.setSpeeds(0, 0);
       finish  = true;
@@ -130,8 +132,21 @@ void turn2(int angle, int speeds) //The function takes in a angle and a speed
     {
       motors.setSpeeds(f*(-speeds), f*(speeds));        //Changes the rotation dependent on the given angle
       imusetup();
+      if(f*rememberCounts[0]*1.01 > f*rememberCounts[1]){
+        // when right counter is higher, the left motor goes to 200 speed for a moment to even out
+        motors.setSpeeds(f*200,f*120); 
+
+      } else if (f*rememberCounts[0]*1.01 < f*rememberCounts[1]){
+        //Same as above but with other motor
+        motors.setSpeeds(f*120,f*200);
+      }
     }
   }
-  Position = angle; //Making the new position value equal the angle it has been told to turn to.
+  Position = angle2; //Making the new position value equal the angle it has been told to turn to.
+  if(Position == -179){
+    Position = 180;
+  }
+  encoders.getCountsAndResetRight(); //just resetting the encoders so that it doesn't use them in the location function
+  encoders.getCountsAndResetLeft();
   location(); //Just prints the new positions values after it has turned
 }

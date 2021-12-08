@@ -1,9 +1,3 @@
-
-void turnStraight(){ //Short function that makes it look straight ahead (face parallell to the global x-axis)
-  turning(0,100);
-resetCounts(); 
-}
-
 void calibrating(){ //calibraing gyro
   turnSensorSetup();
   delay(500);
@@ -11,23 +5,28 @@ void calibrating(){ //calibraing gyro
   lcd.clear();
 }
 
-void turning(int angle, int speeds){ //Functiion that turns the robot to a specific angle in the global coordinate system
+void turning(int angle){ //Functiion that turns the robot to a specific angle in the global coordinate system
   imusetup();
-  turn2(angle,speeds); //Makes it turn
+  turn2(angle); //Makes it turn
+}
+
+void turnStraight(){ //Short function that makes it look straight ahead (face parallell to the global x-axis)
+  turning(0);
+resetCounts(); 
 }
 
 void turnBackward(){
-  turning(-179,100); //if the x-coordinate of the next wild oat is less than the current x-position, it need to turn around to drive forward otherwise it reverses, which it can't do straight
+  turning(-179); //if the x-coordinate of the next wild oat is less than the current x-position, it need to turn around to drive forward otherwise it reverses, which it can't do straight
   resetCounts();
 }
 
 void turnLeft(){//Short function that makes it turn to the left (face parallell to the global y-axis)
-  turning(90,100);
+  turning(90);
   resetCounts();
 }
 
 void turnRight(){//Short function that makes it turn to the right (face parallell to the global y-axis, forward is just opposite of left)
-  turning(-90,100);
+  turning(-90);
   resetCounts();
 }
 
@@ -94,8 +93,9 @@ void driving(){ //function that does the whole driving thing
   continuing();
   delay(500);
   driveToSpot();
+  buzzer.playFrequency(1000,500,10);
   delay(500);
-  if(wildOats[0][i+1] == wildOats[0][i+2]){
+  while(wildOats[0][i+1] == wildOats[0][i+2]){
     sameLine();
     delay(500);
   }
@@ -109,16 +109,27 @@ bool cali = true; //A bool that makes it calibrate the gyro once
 
 void setup() {
   Serial.begin(9600);
+  randomSeed(11); //Change the number to get different routes
+  //using 10, gives a route that has a lot of points around the edge, giving a few problems
+  //Using 11 has an issue in the left y=100 corner
   lineSensors.initFiveSensors();
   readSensors(sensorsState);
+  delay(500);
+  fillDestRand();
+  delay(500);
   routeCal('i');
-  delay(1000);
+  delay(500);
+
 }
 void loop() {
+  lcd.print("Press A");
+  buttonA.waitForPress();
+  lcd.clear();
   while (cali == true){ //While-statement that calibrates the gyro
     calibrating();
     cali = false;
   }
+  
   for (i = 0; i < numDest; i++){ //For-loop to make it go through every wild oat
   driving();
   }

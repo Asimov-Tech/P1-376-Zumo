@@ -9,8 +9,9 @@ Zumo32U4LCD lcd;
 Zumo32U4IMU imu;
 Zumo32U4LineSensors lineSensors;
 Zumo32U4ButtonA buttonA;
+Zumo32U4Buzzer buzzer;
 
-const int numDest = 10;
+const int numDest = 15; //Number of destinations
 double x = 0, y = 0, pose = 0, temp, deg = 0; //the x coordinate, the y coordinate, the position angle compared to the x-axis given in radians, "deg" For cenverting radians to degrees 
 //Distance on the right and left will always come from an equal amount of time
 double distRight, distLeft; //the dist traveled on the right wheel, dist traveled on left wheel, counts from 
@@ -22,8 +23,10 @@ int counts[2]; //an array for the numbers retrieved from the encoders
 int rememberCounts[2] = {0,0}; //a vector to remember the counts 
 
 int i = 0; //Iterations of the for-loop
-int maxY = 100; //The max y-distance on the field
+int maxY = 90; //The max y-distance on the field
 int wildOats[2][numDest];//An array describing the positions of the wild oats
+
+
 
 #define NUM_SENSORS 5 //Number of activated sensors
 uint16_t lineSensorValues[NUM_SENSORS]; //Some array that contains the raw read values from the sensors between 0-2000
@@ -42,7 +45,7 @@ bool right  = false;
 
 LineSensorsWhite sensorsState = {0, 0, 0};
 
-int threshold[NUM_SENSORS] = {400, 400, 400, 400, 400};
+int threshold[NUM_SENSORS] = {400, 40, 400, 400, 400};
 
 
 void returnYmax(){ //Drives the distance needed to go from current y-position to the max y-value on the field 
@@ -64,6 +67,7 @@ void continuing(){
   }
   resetCounts();
   delay(100);
+  if (wildOats[1][i+1] != maxY && wildOats[1][i+1] != 0){ //if-statement that determines wether the robot is on a spot that is on y = 0 or y = maxY
   //If-statement that determines wether the robot should turn right or left before driving on the y-axis
   if (poseVector[1] > (maxY-2) && poseVector[1] < (maxY+2)){
     turnRight();
@@ -71,10 +75,11 @@ void continuing(){
   else {
     turnLeft();
   }
-}
+  }
+  }
 
 void driveToSpot(){ //Function driving the robot to the y-value of the wild oat
-  if(poseVector[1] <(maxY+2) && poseVector[1] > (maxY-2)){ //Determines same thing as if-statement in "continuing" (should maybe use a bool instead) 
+  if(poseVector[1] <(maxY+5) && poseVector[1] > (maxY-5)){ //Determines same thing as if-statement in "continuing" (should maybe use a bool instead) 
     driveDist(maxY-wildOats[1][i+1]); //Then drives to the wild oats y-value
   }
   else{
@@ -97,6 +102,7 @@ void sameLine(){
     }
     turnStraight();
     i++;
+    buzzer.playFrequency(1000,500,10);
  }
   
 
@@ -104,6 +110,13 @@ void returning(){ //A function that returns the robot to either the x-axis or th
   //depending on wether it is closer to the max y-value or the x-axis
   double xRoute = wildOats[1][i+1] + wildOats[1][i+2];
   double yRoute = (maxY-wildOats[1][i+1]) +(maxY-wildOats[1][i+2]);
+  if (wildOats[1][i+1] == maxY || wildOats[1][i+1] == 0){
+   if (wildOats[0][i+2]<wildOats[0][i+1]){
+    turnBackward();}
+    else{
+    turnStraight();}
+  }
+   else{
   if (xRoute >= yRoute){
     turnLeft();
     returnYmax();
@@ -120,7 +133,8 @@ void returning(){ //A function that returns the robot to either the x-axis or th
     else{
     turnStraight();}
   }
-}
+  }
+  }
 
 
 void readSensors(LineSensorsWhite &state) {
@@ -169,24 +183,24 @@ void driveDist (double dist) {
     while(f*rememberCounts[0]< f*count) {
       location();
       readSensors(sensorsState);
-      //if loop so that it avoids driving unevenly 
+      //if loop so that it avoids driving unevenly by using line sensors
       if(sensorsState.C == true && sensorsState.RC == true){ //f*rememberCounts[0]*1.001 > f*rememberCounts[1]
-        // when right counter is higher, the left motor goes to 300 speed for a moment to even out
+        //When both the center and right sensor can see white, it turns a little left
         motors.setSpeeds(f*160,f*100); 
         delay(1);
 
       } else if (sensorsState.LC == true && sensorsState.C == true){ //f*rememberCounts[0]*1.001 < f*rememberCounts[1]
-        //Same as above but with other motor
+        //When both the center and left sensor can see white, it turns a little right
         motors.setSpeeds(f*100,f*160);
         delay(1);
       }
       else if (sensorsState.LC == true){ //f*rememberCounts[0]*1.001 < f*rememberCounts[1]
-        //Same as above but with other motor
+        //If the only the left sensor can see white, it turns faster
         motors.setSpeeds(f*100,f*180);
         delay(1);}
         
         else if (sensorsState.RC == true){ //f*rememberCounts[0]*1.001 < f*rememberCounts[1]
-        //Same as above but with other motor
+        //If the only the right sensor can see white, it turns faster
         motors.setSpeeds(f*180,f*100);
         delay(1);}
       else {
