@@ -27,7 +27,6 @@ int maxY = 90; //The max y-distance on the field
 int wildOats[2][numDest];//An array describing the positions of the wild oats
 
 
-
 #define NUM_SENSORS 5 //Number of activated sensors
 uint16_t lineSensorValues[NUM_SENSORS]; //Some array that contains the raw read values from the sensors between 0-2000
 bool useEmitters = true;
@@ -215,5 +214,4 @@ void driveDist (double dist) {
 void resetCounts() {//Function to reset an array that counts the encoders, this is because the encoders are also needed to calculate the location function
   rememberCounts[0] = 0;
   rememberCounts[1] = 0;
-
 }

@@ -8,26 +8,23 @@ void calibrating(){ //calibraing gyro
 void turning(int angle){ //Functiion that turns the robot to a specific angle in the global coordinate system
   imusetup();
   turn2(angle); //Makes it turn
+  resetCounts(); //resests the encoders after turning
 }
 
 void turnStraight(){ //Short function that makes it look straight ahead (face parallell to the global x-axis)
   turning(0);
-resetCounts(); 
 }
 
 void turnBackward(){
   turning(-179); //if the x-coordinate of the next wild oat is less than the current x-position, it need to turn around to drive forward otherwise it reverses, which it can't do straight
-  resetCounts();
 }
 
 void turnLeft(){//Short function that makes it turn to the left (face parallell to the global y-axis)
   turning(90);
-  resetCounts();
 }
 
 void turnRight(){//Short function that makes it turn to the right (face parallell to the global y-axis, forward is just opposite of left)
   turning(-90);
-  resetCounts();
 }
 
 void getEncoderAndDist() {
@@ -84,34 +81,33 @@ void location(){ //function compiling all the other functions
   calCoordiPose(); //using those distances to calculate the coordinates
   convertRadians(); // converting the radians to degrees for the print
   //Serial.println("New x-value: " + (String)poseVector[0] + " New y-value: " + (String)poseVector[1] + " New position: " + (String)deg + " degrees");
-  delay(1); //Reading distances in intervals of 5 milliseconds
-
+  delay(1); //A small delay for good measure
 }
 
 void driving(){ //function that does the whole driving thing
-  
-  continuing();
+  continuing(); /*assuming that it is on the either the x-axis or maxY and pointing the correct direction for the next point, 
+  it then drives the distance needed to reach the new points x-value and then turns either right or left depending on wether the bot is on the x-axis or maxY*/
   delay(500);
-  driveToSpot();
-  buzzer.playFrequency(1000,500,10);
+  driveToSpot(); /*Assuming that it is pointing the correct way to reach the y-value of the point, it then drives the distance needed to reach that y-value 
+  and when it has reached that value to it turns "forward" according to the global coodinate system (This is to be able to drive out into the field if we got that far)*/
+  buzzer.playFrequency(1000,500,10); //Buzzer to show that it has reached a point
   delay(500);
-  while(wildOats[0][i+1] == wildOats[0][i+2]){
+  while(wildOats[0][i+1] == wildOats[0][i+2]){ //A while-loop that checks if the next point is on the same line and drives to it, so that it doesn't go down to the x-axis or maxY
     sameLine();
     delay(500);
   }
     returning();
     delay(500);
-  }
+}
 
 
 bool cali = true; //A bool that makes it calibrate the gyro once
 
-
 void setup() {
   Serial.begin(9600);
-  randomSeed(11); //Change the number to get different routes
+  randomSeed(1); //Change the number to get different routes
   //using 10, gives a route that has a lot of points around the edge, giving a few problems
-  //Using 11 has an issue in the left y=100 corner
+  //Using 12 pretty much starts off by turning a little too much and then not following the line
   lineSensors.initFiveSensors();
   readSensors(sensorsState);
   delay(500);
@@ -129,7 +125,6 @@ void loop() {
     calibrating();
     cali = false;
   }
-  
   for (i = 0; i < numDest; i++){ //For-loop to make it go through every wild oat
   driving();
   }

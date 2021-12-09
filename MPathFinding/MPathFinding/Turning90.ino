@@ -120,7 +120,7 @@ void turn2(int angle) //The function takes in a angle and a speed
   int angle2 = angle;
   if(Position>angle) f = -1; //Using the old position angle to determine which direction it should spin, to spin the least.
   if(Position-angle>180 || Position-angle<-180) f = -f;
-  if(angle < 0){angle = angle + 2;} else {angle = angle - 2;}
+  if(angle < 0){angle = angle + 2;} else if (angle > 0) {angle = angle - 2;}
   while(finish  !=  true)         //A while loop that runs untill the robot has turned the amount of degrees
   {
     if(turnAngleDegrees == (angle))
