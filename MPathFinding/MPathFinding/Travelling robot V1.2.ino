@@ -24,10 +24,10 @@ Route route = {{},0}; //declaration of the used route (gets edited along the way
 //Destinations with coordinates
 Destination spots[numDest] ={
     {'O', 0,  0},
-    {'A', 20, 40},
-    {'B', 30, 70},
-    {'C', 10, 80},
-    {'D', 60, 20},
+    {'A', 90, 0},
+    {'B', 20, 0},
+    {'C', 30, 0},
+    {'D', 40, 0},
     {'E', 20, 30},
     {'F', 10, 20},
     {'G', 30, 40},

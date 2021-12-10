@@ -68,7 +68,7 @@ void continuing(){
   delay(100);
   if (wildOats[1][i+1] != maxY && wildOats[1][i+1] != 0){ //if-statement that determines wether the robot is on a spot that is on y = 0 or y = maxY
   //If-statement that determines wether the robot should turn right or left before driving on the y-axis
-  if (poseVector[1] > (maxY-2) && poseVector[1] < (maxY+2)){
+  if (poseVector[1] > (maxY-5) && poseVector[1] < (maxY+5)){
     turnRight();
   }
   else {
@@ -86,7 +86,7 @@ void driveToSpot(){ //Function driving the robot to the y-value of the wild oat
     }
     resetCounts();
     delay(100);
-    turnStraight(); //This will be used when the robot has to drive out in the field
+    //turnStraight(); //This will be used when the robot has to drive out in the field
 }
 
 
@@ -99,7 +99,7 @@ void sameLine(){
     turnRight();
     driveDist(wildOats[1][i+1]-wildOats[1][i+2]);
     }
-    turnStraight();
+    //turnStraight();
     i++;
     buzzer.playFrequency(1000,500,10);
  }

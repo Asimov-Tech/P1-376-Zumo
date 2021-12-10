@@ -32,25 +32,21 @@ void getEncoderAndDist() {
   counts[1] = encoders.getCountsAndResetLeft();
   rememberCounts[0] = rememberCounts[0]+counts[0]; //remembering the counts for the driveDist function
   rememberCounts[1] = rememberCounts[1]+counts[1];
-  distRight = (1/78.5)*counts[0]; // Using these counts to calculate the distance each wheel has traveled 
-  distLeft = (1/78.5)*counts[1]; // 1/78.5 is the ratio between a centimeter and 1 encoder count
-  return counts; //Don't think it needs to do this anymore
+  distRight = (1/78.8)*counts[0]; // Using these counts to calculate the distance each wheel has traveled 
+  distLeft = (1/78.8)*counts[1]; // 1/78.5 is the ratio between a centimeter and 1 encoder count
 }
 
 void calCoordiPose(){
-  double poseNew = 0; //Values for the "new position" vector
-  double xNew = 0; 
-  double yNew = 0;
   double distTotal = 0; //Sort of a total distance traveled, but not really
-  poseNew = Position*(M_PI/180); /*calculate the new position, given in radians
-  Usually you'd use the distance the wheels have traveled, but this was very inaccurate so we just use the gyro*/
+  newPose[2] = Position*(M_PI/180); /*calculate the new position, given in radians
+  usually you'd use the distance the wheels have traveled, but this was very inaccurate so we just use the gyro*/
   distTotal = (distRight+distLeft)/2; //calculating total distance so that a nex x and y can be calculated
-  xNew = distTotal*cos(poseVector[2]+(0/2)); //calculate the new x-coordinate after move
-  yNew = distTotal*sin(poseVector[2]+(0/2)); // calculate the new y-coordinate after move
+  newPose[0] = distTotal*cos(poseVector[2]+(0/2)); //calculate the new x-coordinate after move
+  newPose[1] = distTotal*sin(poseVector[2]+(0/2)); // calculate the new y-coordinate after move
   
-  newPose[0] = xNew; //Each new calculated value is given to the "new position" vector
-  newPose[1] = yNew;
-  newPose[2] = poseNew;
+  //newPose[0] = xNew; //Each new calculated value is given to the "new position" vector
+  //newPose[1] = yNew;
+  //newPose[2] = poseNew;
  
   x = poseVector[0] + newPose[0]; // adding new x-value to the old one
   y = poseVector[1] + newPose[1]; // adding new y-value to the old one
@@ -58,29 +54,29 @@ void calCoordiPose(){
    //These new values are now the values of the next "beginning" vector
 
    //The next two if-statements make sure that when the rotation angel exceeds 180 or goes below -180 degrees, it will "reset" it
-  if (temp > 180){
+  /*if (temp > 180){
     // pose = pose%M_PI; (If it spins more than 180 degrees in a single go, which it won't if we keep the amount of time to a minimum)
     temp = - 180 + (temp - 180);
   }
   if (temp < -180){
     temp = 180 -(temp + 180);
-  }
+  }*/
   Position = temp*(180/M_PI); 
   poseVector[0] =x; //Each new value is given to the position vector
   poseVector[1] =y;
   poseVector[2] =temp;
 }
 
-void convertRadians(){
+/*void convertRadians(){
   deg = poseVector[2]*(180/M_PI); //Just converting the radians to degrees 
   return deg;
-}
+}*/
 
 void location(){ //function compiling all the other functions
   getEncoderAndDist(); //Getting the distance each wheel has traveled from the encoder counts 
   calCoordiPose(); //using those distances to calculate the coordinates
-  convertRadians(); // converting the radians to degrees for the print
-  //Serial.println("New x-value: " + (String)poseVector[0] + " New y-value: " + (String)poseVector[1] + " New position: " + (String)deg + " degrees");
+  //convertRadians(); // converting the radians to degrees for the print
+  Serial.println("New x-value: " + (String)poseVector[0] + " New y-value: " + (String)poseVector[1] + " New position: " + (String)Position + " degrees");
   delay(1); //A small delay for good measure
 }
 
