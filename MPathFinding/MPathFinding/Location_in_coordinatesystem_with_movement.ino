@@ -53,24 +53,11 @@ void calCoordiPose(){
   temp = Position*(M_PI/180);
    //These new values are now the values of the next "beginning" vector
 
-   //The next two if-statements make sure that when the rotation angel exceeds 180 or goes below -180 degrees, it will "reset" it
-  /*if (temp > 180){
-    // pose = pose%M_PI; (If it spins more than 180 degrees in a single go, which it won't if we keep the amount of time to a minimum)
-    temp = - 180 + (temp - 180);
-  }
-  if (temp < -180){
-    temp = 180 -(temp + 180);
-  }*/
   Position = temp*(180/M_PI); 
   poseVector[0] =x; //Each new value is given to the position vector
   poseVector[1] =y;
   poseVector[2] =temp;
 }
-
-/*void convertRadians(){
-  deg = poseVector[2]*(180/M_PI); //Just converting the radians to degrees 
-  return deg;
-}*/
 
 void location(){ //function compiling all the other functions
   getEncoderAndDist(); //Getting the distance each wheel has traveled from the encoder counts 
@@ -81,7 +68,7 @@ void location(){ //function compiling all the other functions
 }
 
 void driving(){ //function that does the whole driving thing
-  continuing(); /*assuming that it is on the either the x-axis or maxY and pointing the correct direction for the next point, 
+  continuing(); /*Assuming that it is on the either the x-axis or maxY and pointing the correct direction for the next point, 
   it then drives the distance needed to reach the new points x-value and then turns either right or left depending on wether the bot is on the x-axis or maxY*/
   delay(500);
   driveToSpot(); /*Assuming that it is pointing the correct way to reach the y-value of the point, it then drives the distance needed to reach that y-value 
@@ -89,10 +76,12 @@ void driving(){ //function that does the whole driving thing
   buzzer.playFrequency(1000,500,10); //Buzzer to show that it has reached a point
   delay(500);
   while(wildOats[0][i+1] == wildOats[0][i+2]){ //A while-loop that checks if the next point is on the same line and drives to it, so that it doesn't go down to the x-axis or maxY
-    sameLine();
+    sameLine(); /*Assuming that the robot is already at a point, it will then check whether the next point's y-value is bigger or smaller than the current one
+    then turn to the appropriate direction and drive to the next point's y-value*/
     delay(500);
   }
-    returning();
+    returning(); /*Assuming that the robot is out in the field, it will calculate the shortest route and then drive to either the x-axis 
+    or max y-value and then turn to the appropriate direction so that the "continuing" function can drive to the next point's x-value*/
     delay(500);
 }
 
@@ -101,16 +90,16 @@ bool cali = true; //A bool that makes it calibrate the gyro once
 
 void setup() {
   Serial.begin(9600);
-  randomSeed(1); //Change the number to get different routes
+  randomSeed(39); //Change the number to get different routes
   //using 10, gives a route that has a lot of points around the edge, giving a few problems
   //Using 12 pretty much starts off by turning a little too much and then not following the line
   lineSensors.initFiveSensors();
   readSensors(sensorsState);
+  delay(5000);
+  fillDestRand(); //Making random points 
   delay(500);
-  fillDestRand();
-  delay(500);
-  routeCal('i');
-  delay(500);
+  routeCal('i'); //Calculating the shortest route
+  delay(200);
 
 }
 void loop() {

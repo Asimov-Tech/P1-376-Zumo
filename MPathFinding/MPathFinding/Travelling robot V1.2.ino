@@ -1,8 +1,6 @@
  #include <Wire.h>
 //#include <Zumo32U4.h>
 
-
-
 //const int numDest = 10; //amount of destinations. tested up to 18. took around 2 seconds on arduino UNO (~100 times less processing than zumo)
 //With 16 spots it took around 0.15 secs if all print functionality and delay was removed.
 //Does not alway come with optimal solution

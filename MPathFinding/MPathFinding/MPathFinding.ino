@@ -23,7 +23,7 @@ int counts[2]; //an array for the numbers retrieved from the encoders
 int rememberCounts[2] = {0,0}; //a vector to remember the counts 
 
 int i = 0; //Iterations of the for-loop
-int maxY = 90; //The max y-distance on the field
+int maxY = 90; //The max y-value of the field
 int wildOats[2][numDest];//An array describing the positions of the wild oats
 
 
@@ -58,17 +58,17 @@ void returnTo0(){ //Driving the distance needed to go from the current y-positio
 }
 
 void continuing(){
-  if ((wildOats[0][i+1])<wildOats[0][i]){
-    driveDist((wildOats[0][i]-wildOats[0][i+1]));
+  if ((wildOats[0][i+1])<wildOats[0][i]){ //If the next point's x-value is less than the current one
+    driveDist((wildOats[0][i]-wildOats[0][i+1])); //Drive to the x-coordinate of the wild oat
   }
-  else{
-    driveDist(wildOats[0][i+1]-wildOats[0][i]); //Drives to the x-coordinate of the wild oat (Maybe change this to (wildOats[0][i+1]-poseVector[0]))
+  else{ //If the next point's x-value is higher thann the current one.
+    driveDist(wildOats[0][i+1]-wildOats[0][i]); //Drive to the x-coordinate of the wild oat, just calculated differently 
   }
   resetCounts();
   delay(100);
   if (wildOats[1][i+1] != maxY && wildOats[1][i+1] != 0){ //if-statement that determines wether the robot is on a spot that is on y = 0 or y = maxY
   //If-statement that determines wether the robot should turn right or left before driving on the y-axis
-  if (poseVector[1] > (maxY-5) && poseVector[1] < (maxY+5)){
+  if (poseVector[1] > (maxY-5) && poseVector[1] < (maxY+5)){ //This depends on the wethere the robot is on the max y-value or not
     turnRight();
   }
   else {
@@ -78,7 +78,7 @@ void continuing(){
   }
 
 void driveToSpot(){ //Function driving the robot to the y-value of the wild oat
-  if(poseVector[1] <(maxY+5) && poseVector[1] > (maxY-5)){ //Determines same thing as if-statement in "continuing" (should maybe use a bool instead) 
+  if(poseVector[1] <(maxY+5) && poseVector[1] > (maxY-5)){ //Determines same thing as the second if-statement in "continuing"
     driveDist(maxY-wildOats[1][i+1]); //Then drives to the wild oats y-value
   }
   else{
@@ -90,18 +90,17 @@ void driveToSpot(){ //Function driving the robot to the y-value of the wild oat
 }
 
 
-void sameLine(){
-  if (wildOats[1][i+1] < wildOats[1][i+2]){
-    turnLeft();
-    driveDist(wildOats[1][i+2]-wildOats[1][i+1]);
+void sameLine(){ //This funtion is used when the next point is on the same line as the current one
+  if (wildOats[1][i+1] < wildOats[1][i+2]){ //If the next point's y-value is larger than the current one
+    turnLeft(); //it turns left
+    driveDist(wildOats[1][i+2]-wildOats[1][i+1]); //then drives to that point
   }
-  else {
-    turnRight();
-    driveDist(wildOats[1][i+1]-wildOats[1][i+2]);
+  else { //if not
+    turnRight(); //it turns right
+    driveDist(wildOats[1][i+1]-wildOats[1][i+2]); //and then drives to the point
     }
-    //turnStraight();
-    i++;
-    buzzer.playFrequency(1000,500,10);
+    i++; //Because is goes to a new point withour going through the entire vood loop
+    buzzer.playFrequency(1000,500,10); //Buzzer to tell that it has hit a point
  }
   
 
@@ -109,30 +108,23 @@ void returning(){ //A function that returns the robot to either the x-axis or th
   //depending on wether it is closer to the max y-value or the x-axis
   double xRoute = wildOats[1][i+1] + wildOats[1][i+2];
   double yRoute = (maxY-wildOats[1][i+1]) +(maxY-wildOats[1][i+2]);
-  if (wildOats[1][i+1] == maxY || wildOats[1][i+1] == 0){
-   if (wildOats[0][i+2]<wildOats[0][i+1]){
-    turnBackward();}
-    else{
-    turnStraight();}
+  if (wildOats[1][i+1] == maxY || wildOats[1][i+1] == 0){ //If the next point is either on max y-value or x-axis
+    delay(1); //aka "do nothing"
   }
-   else{
-  if (xRoute >= yRoute){
+   else{ //If not, it uses the distances calculated earlier as x and y Route, to determine which route to take to the next point.
+  if (xRoute >= yRoute){ //If the x Route is longer, it will go the y route
     turnLeft();
-    returnYmax();
-    if (wildOats[0][i+2]<wildOats[0][i+1]){
-    turnBackward();}
-    else{
-    turnStraight();}
+    returnYmax(); //This function just drives the distance between the current point and the max y-value
   }
-  else {
+  else { //If the y route is longer, it will go the x route
    turnRight();
-   returnTo0();
-   if (wildOats[0][i+2]<wildOats[0][i+1]){
+   returnTo0(); //This function just drives the distance between the current point and the x-axis
+  }
+  }
+  if (wildOats[0][i+2]<wildOats[0][i+1]){ //Determining which way to turn depending on whether the x-value of the next point is bigger or smaller
     turnBackward();}
     else{
     turnStraight();}
-  }
-  }
   }
 
 
